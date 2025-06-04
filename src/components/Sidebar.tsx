@@ -8,7 +8,9 @@ import {
   Folder,
   Calendar,
   X,
-  BarChart3
+  BarChart3,
+  Package,
+  User
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -20,9 +22,11 @@ const navigation = [
   { name: 'Tableau de bord', href: '/', icon: BarChart3 },
   { name: 'Surfaces agricoles', href: '/surfaces', icon: Folder },
   { name: 'Champs de pommes de terre', href: '/fields', icon: Calendar },
+  { name: 'Récoltes & Stock', href: '/harvests', icon: Package },
   { name: 'Intrants & Stocks', href: '/inputs', icon: Database },
   { name: 'Clients', href: '/clients', icon: Users },
   { name: 'Ventes', href: '/sales', icon: Calendar },
+  { name: 'Profil', href: '/profile', icon: User },
 ];
 
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {

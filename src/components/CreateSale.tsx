@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -140,10 +139,10 @@ const CreateSale = ({ onBack, onSave }: CreateSaleProps) => {
                     <SelectValue placeholder="Sélectionnez le mode" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Espèces">Espèces</SelectItem>
-                    <SelectItem value="Mobile Money">Mobile Money</SelectItem>
-                    <SelectItem value="Virement">Virement</SelectItem>
-                    <SelectItem value="Chèque">Chèque</SelectItem>
+                    <SelectItem value="Orange Money">Orange Money</SelectItem>
+                    <SelectItem value="MTN Mobile Money">MTN Mobile Money</SelectItem>
+                    <SelectItem value="Carte Visa">Carte Visa</SelectItem>
+                    <SelectItem value="Espèce (cash)">Espèce (cash)</SelectItem>
                     <SelectItem value="Crédit 30j">Crédit 30j</SelectItem>
                   </SelectContent>
                 </Select>

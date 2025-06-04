@@ -1,10 +1,36 @@
 
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import StatsCard from './StatsCard';
+import CreateActivity from './CreateActivity';
 
 const Dashboard = () => {
+  const [showCreateActivity, setShowCreateActivity] = useState(false);
+  const [activities, setActivities] = useState([
+    {
+      id: 1,
+      title: 'Traitement fongicide Parcelle A1',
+      type: 'Traitement',
+      date: '2024-06-05',
+      status: 'Planifiée'
+    }
+  ]);
+
+  const handleSaveActivity = (newActivity: any) => {
+    setActivities([...activities, newActivity]);
+  };
+
+  if (showCreateActivity) {
+    return (
+      <CreateActivity 
+        onBack={() => setShowCreateActivity(false)} 
+        onSave={handleSaveActivity}
+      />
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -13,7 +39,7 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold text-gray-900">Tableau de bord</h1>
           <p className="text-gray-600 mt-1">Vue d'ensemble de votre exploitation</p>
         </div>
-        <Button className="bg-green-600 hover:bg-green-700">
+        <Button className="bg-green-600 hover:bg-green-700" onClick={() => setShowCreateActivity(true)}>
           Nouvelle activité
         </Button>
       </div>
@@ -36,7 +62,7 @@ const Dashboard = () => {
         />
         <StatsCard
           title="Revenus YTD"
-          value="€45,680"
+          value="456,800,000 GNF"
           description="Ventes réalisées"
           trend="+12% vs objectif"
           color="bg-blue-500"
@@ -45,7 +71,7 @@ const Dashboard = () => {
           title="Clients actifs"
           value="23"
           description="4 nouvelles dettes"
-          trend="€3,200 en attente"
+          trend="32,000,000 GNF en attente"
           color="bg-purple-500"
         />
       </div>
@@ -60,36 +86,36 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 rounded-lg" style={{backgroundColor: 'rgba(34, 197, 94, 0.1)'}}>
                 <div>
                   <p className="font-medium">Parcelle A1 - Charlotte</p>
                   <p className="text-sm text-gray-600">Planté le 15 mars</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium text-green-600">Prêt à récolter</p>
-                  <Progress value={95} className="w-20 mt-1" />
+                  <Progress value={95} className="w-20 mt-1 [&>div]:bg-green-500" />
                 </div>
               </div>
               
-              <div className="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 rounded-lg" style={{backgroundColor: 'rgba(245, 158, 11, 0.1)'}}>
                 <div>
                   <p className="font-medium">Parcelle B2 - Bintje</p>
                   <p className="text-sm text-gray-600">Planté le 25 mars</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium text-amber-600">En croissance</p>
-                  <Progress value={70} className="w-20 mt-1" />
+                  <Progress value={70} className="w-20 mt-1 [&>div]:bg-amber-500" />
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 rounded-lg" style={{backgroundColor: 'rgba(59, 130, 246, 0.1)'}}>
                 <div>
                   <p className="font-medium">Parcelle C3 - Désirée</p>
                   <p className="text-sm text-gray-600">Planté le 2 avril</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium text-blue-600">Jeune plant</p>
-                  <Progress value={40} className="w-20 mt-1" />
+                  <Progress value={40} className="w-20 mt-1 [&>div]:bg-blue-500" />
                 </div>
               </div>
             </div>
@@ -104,7 +130,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <div className="flex items-center p-3 bg-red-50 border-l-4 border-red-400 rounded">
+              <div className="flex items-center p-3 rounded border-l-4 border-red-400" style={{backgroundColor: 'rgba(239, 68, 68, 0.1)'}}>
                 <div className="flex-1">
                   <p className="font-medium text-red-800">Traitement urgent</p>
                   <p className="text-sm text-red-600">Parcelle A1 - Mildiou détecté</p>
@@ -112,15 +138,15 @@ const Dashboard = () => {
                 <Button size="sm" variant="destructive">Action</Button>
               </div>
 
-              <div className="flex items-center p-3 bg-amber-50 border-l-4 border-amber-400 rounded">
+              <div className="flex items-center p-3 rounded border-l-4 border-amber-400" style={{backgroundColor: 'rgba(245, 158, 11, 0.1)'}}>
                 <div className="flex-1">
                   <p className="font-medium text-amber-800">Paiement en retard</p>
-                  <p className="text-sm text-amber-600">Client Martin - €850</p>
+                  <p className="text-sm text-amber-600">Client Martin - 8,500,000 GNF</p>
                 </div>
                 <Button size="sm" variant="outline">Relancer</Button>
               </div>
 
-              <div className="flex items-center p-3 bg-blue-50 border-l-4 border-blue-400 rounded">
+              <div className="flex items-center p-3 rounded border-l-4 border-blue-400" style={{backgroundColor: 'rgba(59, 130, 246, 0.1)'}}>
                 <div className="flex-1">
                   <p className="font-medium text-blue-800">Stock faible</p>
                   <p className="text-sm text-blue-600">Engrais NPK - 2 sacs restants</p>
@@ -150,7 +176,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between py-2 border-b">
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span>Vente à Restaurant Le Jardin - €1,200</span>
+                <span>Vente à Restaurant Le Jardin - 12,000,000 GNF</span>
               </div>
               <span className="text-sm text-gray-500">Hier</span>
             </div>
