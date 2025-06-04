@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Plus, Database } from 'lucide-react';
+import CreateInput from './CreateInput';
 
 const Inputs = () => {
+  const [showCreate, setShowCreate] = useState(false);
   const [inputs, setInputs] = useState([
     {
       id: 1,
@@ -15,7 +17,7 @@ const Inputs = () => {
       stock: 25,
       unit: 'sacs 50kg',
       alertLevel: 10,
-      totalValue: 2500,
+      totalValue: 2500000,
       lastPurchase: '2024-02-15'
     },
     {
@@ -25,7 +27,7 @@ const Inputs = () => {
       stock: 180,
       unit: 'kg',
       alertLevel: 50,
-      totalValue: 720,
+      totalValue: 720000,
       lastPurchase: '2024-01-20'
     },
     {
@@ -35,7 +37,7 @@ const Inputs = () => {
       stock: 8,
       unit: 'litres',
       alertLevel: 5,
-      totalValue: 320,
+      totalValue: 320000,
       lastPurchase: '2024-03-10'
     },
     {
@@ -45,10 +47,23 @@ const Inputs = () => {
       stock: 120,
       unit: 'tonnes',
       alertLevel: 20,
-      totalValue: 4800,
+      totalValue: 4800000,
       lastPurchase: '2024-01-05'
     }
   ]);
+
+  const handleSaveInput = (newInput: any) => {
+    setInputs([...inputs, newInput]);
+  };
+
+  if (showCreate) {
+    return (
+      <CreateInput 
+        onBack={() => setShowCreate(false)} 
+        onSave={handleSaveInput}
+      />
+    );
+  }
 
   const getStockLevel = (stock: number, alertLevel: number) => {
     const ratio = stock / (alertLevel * 2);
@@ -75,7 +90,7 @@ const Inputs = () => {
           <h1 className="text-3xl font-bold text-gray-900">Intrants & Stocks</h1>
           <p className="text-gray-600 mt-1">Gestion de vos intrants agricoles</p>
         </div>
-        <Button className="bg-green-600 hover:bg-green-700">
+        <Button className="bg-green-600 hover:bg-green-700" onClick={() => setShowCreate(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Nouvel intrant
         </Button>
@@ -86,7 +101,7 @@ const Inputs = () => {
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">€8,340</p>
+              <p className="text-2xl font-bold text-green-600">8,340,000 GNF</p>
               <p className="text-sm text-gray-600">Valeur totale</p>
             </div>
           </CardContent>
@@ -162,7 +177,7 @@ const Inputs = () => {
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
                       <p className="text-gray-600">Valeur totale</p>
-                      <p className="font-medium">€{input.totalValue}</p>
+                      <p className="font-medium">{input.totalValue.toLocaleString()} GNF</p>
                     </div>
                     <div>
                       <p className="text-gray-600">Dernier achat</p>

@@ -4,54 +4,69 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Users } from 'lucide-react';
+import CreateClient from './CreateClient';
 
 const Clients = () => {
+  const [showCreate, setShowCreate] = useState(false);
   const [clients, setClients] = useState([
     {
       id: 1,
       name: 'Restaurant Le Jardin',
-      contact: 'Jean Martin',
-      phone: '03 28 45 67 89',
-      email: 'contact@lejardin.fr',
-      totalPurchases: 12500,
+      contact: 'Mamadou Diallo',
+      phone: '+224 628 12 34 56',
+      email: 'contact@lejardin.gn',
+      totalPurchases: 12500000,
       debt: 0,
       status: 'Actif',
       lastOrder: '2024-05-20'
     },
     {
       id: 2,
-      name: 'Supermarché Delhaize',
-      contact: 'Marie Dubois',
-      phone: '03 28 56 78 90',
-      email: 'marie.dubois@delhaize.be',
-      totalPurchases: 8900,
-      debt: 850,
+      name: 'Supermarché Central',
+      contact: 'Aissatou Sow',
+      phone: '+224 622 56 78 90',
+      email: 'aissatou@supercentral.gn',
+      totalPurchases: 8900000,
+      debt: 850000,
       status: 'Dette',
       lastOrder: '2024-05-15'
     },
     {
       id: 3,
-      name: 'Coopérative Locale',
-      contact: 'Pierre Lefebvre',
-      phone: '03 28 67 89 01',
-      email: 'p.lefebvre@coop-locale.fr',
-      totalPurchases: 15600,
+      name: 'Coopérative Locale Kindia',
+      contact: 'Ibrahima Bah',
+      phone: '+224 627 89 01 23',
+      email: 'i.bah@coop-kindia.gn',
+      totalPurchases: 15600000,
       debt: 0,
       status: 'Actif',
       lastOrder: '2024-05-22'
     },
     {
       id: 4,
-      name: 'Ferme Biologique Nord',
-      contact: 'Sophie Bernard',
-      phone: '03 28 78 90 12',
-      email: 'sophie@ferme-bio-nord.fr',
-      totalPurchases: 4200,
-      debt: 320,
+      name: 'Marché Madina',
+      contact: 'Fatoumata Camara',
+      phone: '+224 620 90 12 34',
+      email: 'fatou@marche-madina.gn',
+      totalPurchases: 4200000,
+      debt: 320000,
       status: 'Dette',
       lastOrder: '2024-05-10'
     }
   ]);
+
+  const handleSaveClient = (newClient: any) => {
+    setClients([...clients, newClient]);
+  };
+
+  if (showCreate) {
+    return (
+      <CreateClient 
+        onBack={() => setShowCreate(false)} 
+        onSave={handleSaveClient}
+      />
+    );
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -70,7 +85,7 @@ const Clients = () => {
           <h1 className="text-3xl font-bold text-gray-900">Clients</h1>
           <p className="text-gray-600 mt-1">Gestion de votre clientèle</p>
         </div>
-        <Button className="bg-green-600 hover:bg-green-700">
+        <Button className="bg-green-600 hover:bg-green-700" onClick={() => setShowCreate(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Nouveau client
         </Button>
@@ -81,7 +96,7 @@ const Clients = () => {
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">€41,200</p>
+              <p className="text-2xl font-bold text-green-600">41,200,000 GNF</p>
               <p className="text-sm text-gray-600">CA total</p>
             </div>
           </CardContent>
@@ -97,7 +112,7 @@ const Clients = () => {
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-amber-600">€1,170</p>
+              <p className="text-2xl font-bold text-amber-600">1,170,000 GNF</p>
               <p className="text-sm text-gray-600">Dettes totales</p>
             </div>
           </CardContent>
@@ -137,12 +152,12 @@ const Clients = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm font-medium text-gray-600">CA total</p>
-                    <p className="text-lg font-semibold text-green-600">€{client.totalPurchases.toLocaleString()}</p>
+                    <p className="text-lg font-semibold text-green-600">{client.totalPurchases.toLocaleString()} GNF</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600">Dette actuelle</p>
                     <p className={`text-lg font-semibold ${client.debt > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                      €{client.debt}
+                      {client.debt.toLocaleString()} GNF
                     </p>
                   </div>
                 </div>

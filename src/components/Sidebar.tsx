@@ -7,7 +7,8 @@ import {
   Users,
   Folder,
   Calendar,
-  X
+  X,
+  BarChart3
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -16,7 +17,7 @@ interface SidebarProps {
 }
 
 const navigation = [
-  { name: 'Tableau de bord', href: '/', icon: Database },
+  { name: 'Tableau de bord', href: '/', icon: BarChart3 },
   { name: 'Surfaces agricoles', href: '/surfaces', icon: Folder },
   { name: 'Champs de pommes de terre', href: '/fields', icon: Calendar },
   { name: 'Intrants & Stocks', href: '/inputs', icon: Database },
@@ -38,22 +39,22 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
       {/* Sidebar */}
       <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
-        isOpen ? "translate-x-0" : "-translate-x-full"
+        "fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 lg:flex lg:flex-col",
+        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
           <div className="flex items-center">
             <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">🥔</span>
             </div>
-            <span className="ml-2 text-lg font-semibold text-gray-900">AgroManager</span>
+            <span className="ml-2 text-lg font-semibold text-gray-900">AgroGuinée</span>
           </div>
           <Button variant="ghost" size="sm" className="lg:hidden" onClick={onClose}>
             <X className="h-5 w-5" />
           </Button>
         </div>
 
-        <nav className="mt-8 px-4">
+        <nav className="flex-1 mt-8 px-4 overflow-y-auto">
           <ul className="space-y-2">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;

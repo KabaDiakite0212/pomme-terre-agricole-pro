@@ -4,54 +4,69 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Calendar } from 'lucide-react';
+import CreateSale from './CreateSale';
 
 const Sales = () => {
+  const [showCreate, setShowCreate] = useState(false);
   const [sales, setSales] = useState([
     {
       id: 1,
       clientName: 'Restaurant Le Jardin',
       product: 'Pommes de terre Charlotte',
       quantity: 500,
-      unitPrice: 2.4,
-      totalAmount: 1200,
+      unitPrice: 24000,
+      totalAmount: 12000000,
       saleDate: '2024-05-20',
       paymentStatus: 'Payé',
-      paymentMethod: 'Virement'
+      paymentMethod: 'Mobile Money'
     },
     {
       id: 2,
-      clientName: 'Supermarché Delhaize',
+      clientName: 'Supermarché Central',
       product: 'Pommes de terre Bintje',
       quantity: 800,
-      unitPrice: 1.8,
-      totalAmount: 1440,
+      unitPrice: 18000,
+      totalAmount: 14400000,
       saleDate: '2024-05-18',
       paymentStatus: 'En attente',
       paymentMethod: 'Crédit 30j'
     },
     {
       id: 3,
-      clientName: 'Coopérative Locale',
+      clientName: 'Coopérative Locale Kindia',
       product: 'Pommes de terre Désirée',
       quantity: 1200,
-      unitPrice: 2.0,
-      totalAmount: 2400,
+      unitPrice: 20000,
+      totalAmount: 24000000,
       saleDate: '2024-05-15',
       paymentStatus: 'Payé',
       paymentMethod: 'Espèces'
     },
     {
       id: 4,
-      clientName: 'Ferme Biologique Nord',
-      product: 'Pommes de terre Charlotte Bio',
+      clientName: 'Marché Madina',
+      product: 'Pommes de terre Charlotte',
       quantity: 300,
-      unitPrice: 3.2,
-      totalAmount: 960,
+      unitPrice: 32000,
+      totalAmount: 9600000,
       saleDate: '2024-05-12',
       paymentStatus: 'Retard',
-      paymentMethod: 'Chèque'
+      paymentMethod: 'Virement'
     }
   ]);
+
+  const handleSaveSale = (newSale: any) => {
+    setSales([...sales, newSale]);
+  };
+
+  if (showCreate) {
+    return (
+      <CreateSale 
+        onBack={() => setShowCreate(false)} 
+        onSave={handleSaveSale}
+      />
+    );
+  }
 
   const getPaymentStatusColor = (status: string) => {
     switch (status) {
@@ -87,7 +102,7 @@ const Sales = () => {
           <h1 className="text-3xl font-bold text-gray-900">Ventes</h1>
           <p className="text-gray-600 mt-1">Suivi de vos ventes et facturation</p>
         </div>
-        <Button className="bg-green-600 hover:bg-green-700">
+        <Button className="bg-green-600 hover:bg-green-700" onClick={() => setShowCreate(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Nouvelle vente
         </Button>
@@ -98,7 +113,7 @@ const Sales = () => {
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">€{stats.totalRevenue.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-green-600">{stats.totalRevenue.toLocaleString()} GNF</p>
               <p className="text-sm text-gray-600">CA total</p>
             </div>
           </CardContent>
@@ -114,7 +129,7 @@ const Sales = () => {
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-amber-600">€{stats.pendingAmount}</p>
+              <p className="text-2xl font-bold text-amber-600">{stats.pendingAmount.toLocaleString()} GNF</p>
               <p className="text-sm text-gray-600">En attente</p>
             </div>
           </CardContent>
@@ -122,7 +137,7 @@ const Sales = () => {
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-red-600">€{stats.overdueAmount}</p>
+              <p className="text-2xl font-bold text-red-600">{stats.overdueAmount.toLocaleString()} GNF</p>
               <p className="text-sm text-gray-600">En retard</p>
             </div>
           </CardContent>
@@ -154,9 +169,9 @@ const Sales = () => {
                   </div>
                   
                   <div className="text-right">
-                    <p className="text-xl font-bold text-green-600">€{sale.totalAmount}</p>
+                    <p className="text-xl font-bold text-green-600">{sale.totalAmount.toLocaleString()} GNF</p>
                     <p className="text-sm text-gray-600">
-                      {sale.quantity} kg × €{sale.unitPrice}
+                      {sale.quantity} kg × {sale.unitPrice.toLocaleString()} GNF
                     </p>
                     <Badge variant={getPaymentStatusColor(sale.paymentStatus)} className="mt-1">
                       {sale.paymentStatus}

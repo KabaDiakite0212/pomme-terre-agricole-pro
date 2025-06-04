@@ -2,11 +2,12 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Plus, Calendar } from 'lucide-react';
+import CreateField from './CreateField';
 
 const Fields = () => {
+  const [showCreate, setShowCreate] = useState(false);
   const [fields, setFields] = useState([
     {
       id: 1,
@@ -43,14 +44,18 @@ const Fields = () => {
     }
   ]);
 
-  const getStageColor = (stage: string) => {
-    switch (stage) {
-      case 'Prêt à récolter': return 'bg-green-500';
-      case 'Croissance': return 'bg-amber-500';
-      case 'Jeune plant': return 'bg-blue-500';
-      default: return 'bg-gray-500';
-    }
+  const handleSaveField = (newField: any) => {
+    setFields([...fields, newField]);
   };
+
+  if (showCreate) {
+    return (
+      <CreateField 
+        onBack={() => setShowCreate(false)} 
+        onSave={handleSaveField}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -60,7 +65,7 @@ const Fields = () => {
           <h1 className="text-3xl font-bold text-gray-900">Champs de pommes de terre</h1>
           <p className="text-gray-600 mt-1">Suivi de vos cultures en cours</p>
         </div>
-        <Button className="bg-green-600 hover:bg-green-700">
+        <Button className="bg-green-600 hover:bg-green-700" onClick={() => setShowCreate(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Nouveau champ
         </Button>
@@ -102,7 +107,6 @@ const Fields = () => {
         </Card>
       </div>
 
-      {/* Fields Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {fields.map((field) => (
           <Card key={field.id} className="hover:shadow-lg transition-shadow duration-300">

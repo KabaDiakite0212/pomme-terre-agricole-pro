@@ -21,7 +21,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
               <Menu className="h-6 w-6" />
             </Button>
             <h1 className="ml-2 text-2xl font-bold text-green-800">
-              AgroManager Pro
+              AgroGuinée Pro
             </h1>
           </div>
           <div className="flex items-center space-x-4">

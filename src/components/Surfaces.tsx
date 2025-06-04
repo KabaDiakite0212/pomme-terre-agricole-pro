@@ -2,17 +2,18 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Folder } from 'lucide-react';
+import CreateSurface from './CreateSurface';
 
 const Surfaces = () => {
+  const [showCreate, setShowCreate] = useState(false);
   const [surfaces, setSurfaces] = useState([
     {
       id: 1,
       name: 'Parcelle Nord',
       area: 8.5,
-      location: 'Secteur A - Route de Comines',
+      location: 'Secteur Kindia - Route de Mamou',
       soilType: 'Limoneux',
       status: 'Cultivée',
       lastCrop: 'Pommes de terre'
@@ -21,21 +22,34 @@ const Surfaces = () => {
       id: 2,
       name: 'Parcelle Sud',
       area: 12.3,
-      location: 'Secteur B - Chemin des Chênes',
+      location: 'Secteur Forécariah - Chemin de Boffa',
       soilType: 'Argilo-limoneux',
       status: 'En repos',
-      lastCrop: 'Betteraves'
+      lastCrop: 'Légumes'
     },
     {
       id: 3,
       name: 'Parcelle Est',
       area: 6.2,
-      location: 'Secteur C - Près du village',
+      location: 'Secteur Dubréka - Près du village',
       soilType: 'Sableux',
       status: 'Cultivée',
       lastCrop: 'Pommes de terre'
     }
   ]);
+
+  const handleSaveSurface = (newSurface: any) => {
+    setSurfaces([...surfaces, newSurface]);
+  };
+
+  if (showCreate) {
+    return (
+      <CreateSurface 
+        onBack={() => setShowCreate(false)} 
+        onSave={handleSaveSurface}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -45,7 +59,7 @@ const Surfaces = () => {
           <h1 className="text-3xl font-bold text-gray-900">Surfaces agricoles</h1>
           <p className="text-gray-600 mt-1">Gestion de vos parcelles et terrains</p>
         </div>
-        <Button className="bg-green-600 hover:bg-green-700">
+        <Button className="bg-green-600 hover:bg-green-700" onClick={() => setShowCreate(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Nouvelle surface
         </Button>
