@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Plus, Calendar } from 'lucide-react';
+import { Plus, Calendar, Eye, Settings } from 'lucide-react';
 import CreateField from './CreateField';
 
 const Fields = () => {
@@ -46,6 +46,14 @@ const Fields = () => {
 
   const handleSaveField = (newField: any) => {
     setFields([...fields, newField]);
+  };
+
+  const handleDetails = (fieldId: number) => {
+    alert(`Détails du champ ${fieldId}`);
+  };
+
+  const handleActions = (fieldId: number) => {
+    alert(`Actions pour le champ ${fieldId}`);
   };
 
   if (showCreate) {
@@ -160,9 +168,6 @@ const Fields = () => {
                     <Progress 
                       value={field.progress} 
                       className="h-3"
-                      style={{
-                        background: `linear-gradient(to right, ${stageInfo.progressColor.replace('bg-', '#')}, ${stageInfo.progressColor.replace('bg-', '#')})`
-                      }}
                     />
                   </div>
                   
@@ -183,10 +188,22 @@ const Fields = () => {
                   </div>
 
                   <div className="flex space-x-2 pt-2">
-                    <Button variant="outline" size="sm" className="flex-1 border-green-300 text-green-700 hover:bg-green-50">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 border-green-300 text-green-700 hover:bg-green-50"
+                      onClick={() => handleDetails(field.id)}
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
                       Détails
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50"
+                      onClick={() => handleActions(field.id)}
+                    >
+                      <Settings className="h-4 w-4 mr-1" />
                       Actions
                     </Button>
                   </div>

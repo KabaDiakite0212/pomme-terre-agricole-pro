@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Plus, Database } from 'lucide-react';
+import { Plus, Database, Package, ShoppingCart } from 'lucide-react';
 import CreateInput from './CreateInput';
 
 const Inputs = () => {
@@ -54,6 +54,14 @@ const Inputs = () => {
 
   const handleSaveInput = (newInput: any) => {
     setInputs([...inputs, newInput]);
+  };
+
+  const handleUse = (inputId: number) => {
+    alert(`Utiliser l'intrant ${inputId}`);
+  };
+
+  const handleBuy = (inputId: number) => {
+    alert(`Acheter l'intrant ${inputId}`);
   };
 
   if (showCreate) {
@@ -212,10 +220,22 @@ const Inputs = () => {
                   </div>
 
                   <div className="flex space-x-2 pt-2">
-                    <Button variant="outline" size="sm" className="flex-1 border-green-300 text-green-700 hover:bg-green-50">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 border-green-300 text-green-700 hover:bg-green-50"
+                      onClick={() => handleUse(input.id)}
+                    >
+                      <Package className="h-4 w-4 mr-1" />
                       Utiliser
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50"
+                      onClick={() => handleBuy(input.id)}
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-1" />
                       Acheter
                     </Button>
                   </div>

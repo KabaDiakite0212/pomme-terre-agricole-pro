@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Calendar } from 'lucide-react';
+import { Plus, Calendar, Eye, Check } from 'lucide-react';
 import CreateSale from './CreateSale';
 
 const Sales = () => {
@@ -18,7 +18,7 @@ const Sales = () => {
       totalAmount: 12000000,
       saleDate: '2024-05-20',
       paymentStatus: 'Payé',
-      paymentMethod: 'Mobile Money'
+      paymentMethod: 'Orange Money'
     },
     {
       id: 2,
@@ -40,7 +40,7 @@ const Sales = () => {
       totalAmount: 24000000,
       saleDate: '2024-05-15',
       paymentStatus: 'Payé',
-      paymentMethod: 'Espèces'
+      paymentMethod: 'Espèce'
     },
     {
       id: 4,
@@ -51,12 +51,24 @@ const Sales = () => {
       totalAmount: 9600000,
       saleDate: '2024-05-12',
       paymentStatus: 'Retard',
-      paymentMethod: 'Virement'
+      paymentMethod: 'MTN Mobile Money'
     }
   ]);
 
   const handleSaveSale = (newSale: any) => {
     setSales([...sales, newSale]);
+  };
+
+  const handleViewDetails = (saleId: number) => {
+    alert(`Voir les détails de la vente ${saleId}`);
+  };
+
+  const handleMarkPaid = (saleId: number) => {
+    setSales(sales.map(sale => 
+      sale.id === saleId 
+        ? { ...sale, paymentStatus: 'Payé' }
+        : sale
+    ));
   };
 
   if (showCreate) {
@@ -184,11 +196,21 @@ const Sales = () => {
                     Mode de paiement: <span className="font-medium">{sale.paymentMethod}</span>
                   </div>
                   <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleViewDetails(sale.id)}
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
                       Voir détails
                     </Button>
                     {sale.paymentStatus !== 'Payé' && (
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleMarkPaid(sale.id)}
+                      >
+                        <Check className="h-4 w-4 mr-1" />
                         Marquer payé
                       </Button>
                     )}

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Package } from 'lucide-react';
+import { Plus, Package, ShoppingCart, Edit } from 'lucide-react';
 import CreateHarvest from './CreateHarvest';
 
 const Harvests = () => {
@@ -39,6 +39,14 @@ const Harvests = () => {
 
   const handleSaveHarvest = (newHarvest: any) => {
     setHarvests([...harvests, newHarvest]);
+  };
+
+  const handleSell = (harvestId: number) => {
+    alert(`Vendre la récolte ${harvestId}`);
+  };
+
+  const handleModify = (harvestId: number) => {
+    alert(`Modifier la récolte ${harvestId}`);
   };
 
   if (showCreate) {
@@ -171,10 +179,22 @@ const Harvests = () => {
                 </div>
 
                 <div className="flex space-x-2 pt-2">
-                  <Button variant="outline" size="sm" className="flex-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 border-green-300 text-green-700 hover:bg-green-50"
+                    onClick={() => handleSell(harvest.id)}
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-1" />
                     Vendre
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50"
+                    onClick={() => handleModify(harvest.id)}
+                  >
+                    <Edit className="h-4 w-4 mr-1" />
                     Modifier
                   </Button>
                 </div>

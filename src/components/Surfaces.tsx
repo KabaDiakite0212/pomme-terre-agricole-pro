@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Folder } from 'lucide-react';
+import { Plus, Folder, Edit, History } from 'lucide-react';
 import CreateSurface from './CreateSurface';
 
 const Surfaces = () => {
@@ -40,6 +40,14 @@ const Surfaces = () => {
 
   const handleSaveSurface = (newSurface: any) => {
     setSurfaces([...surfaces, newSurface]);
+  };
+
+  const handleModify = (surfaceId: number) => {
+    alert(`Modification de la surface ${surfaceId}`);
+  };
+
+  const handleHistory = (surfaceId: number) => {
+    alert(`Historique de la surface ${surfaceId}`);
   };
 
   if (showCreate) {
@@ -143,10 +151,22 @@ const Surfaces = () => {
                   <p className="text-sm text-amber-700 font-medium">{surface.lastCrop}</p>
                 </div>
                 <div className="flex space-x-2 pt-2">
-                  <Button variant="outline" size="sm" className="flex-1 border-green-300 text-green-700 hover:bg-green-50">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 border-green-300 text-green-700 hover:bg-green-50"
+                    onClick={() => handleModify(surface.id)}
+                  >
+                    <Edit className="h-4 w-4 mr-1" />
                     Modifier
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50"
+                    onClick={() => handleHistory(surface.id)}
+                  >
+                    <History className="h-4 w-4 mr-1" />
                     Historique
                   </Button>
                 </div>
