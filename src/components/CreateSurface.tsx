@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { ArrowLeft } from 'lucide-react';
 
 interface CreateSurfaceProps {
@@ -19,7 +20,9 @@ const CreateSurface = ({ onBack, onSave }: CreateSurfaceProps) => {
     area: '',
     location: '',
     soilType: '',
-    description: ''
+    description: '',
+    waterDistance: '',
+    isFenced: false
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -32,7 +35,9 @@ const CreateSurface = ({ onBack, onSave }: CreateSurfaceProps) => {
       soilType: formData.soilType,
       status: 'Disponible',
       lastCrop: 'Aucune',
-      description: formData.description
+      description: formData.description,
+      waterDistance: parseFloat(formData.waterDistance),
+      isFenced: formData.isFenced
     };
     onSave(newSurface);
     onBack();
@@ -91,20 +96,42 @@ const CreateSurface = ({ onBack, onSave }: CreateSurfaceProps) => {
               />
             </div>
 
-            <div>
-              <Label htmlFor="soilType">Type de sol *</Label>
-              <Select onValueChange={(value) => setFormData({...formData, soilType: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez le type de sol" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Argileux">Argileux</SelectItem>
-                  <SelectItem value="Limoneux">Limoneux</SelectItem>
-                  <SelectItem value="Sableux">Sableux</SelectItem>
-                  <SelectItem value="Argilo-limoneux">Argilo-limoneux</SelectItem>
-                  <SelectItem value="Sablo-limoneux">Sablo-limoneux</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="soilType">Type de sol *</Label>
+                <Select onValueChange={(value) => setFormData({...formData, soilType: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez le type de sol" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Argileux">Argileux</SelectItem>
+                    <SelectItem value="Limoneux">Limoneux</SelectItem>
+                    <SelectItem value="Sableux">Sableux</SelectItem>
+                    <SelectItem value="Argilo-limoneux">Argilo-limoneux</SelectItem>
+                    <SelectItem value="Sablo-limoneux">Sablo-limoneux</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="waterDistance">Distance de la source d'eau (mètres) *</Label>
+                <Input
+                  id="waterDistance"
+                  type="number"
+                  value={formData.waterDistance}
+                  onChange={(e) => setFormData({...formData, waterDistance: e.target.value})}
+                  placeholder="Ex: 150"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="isFenced"
+                checked={formData.isFenced}
+                onCheckedChange={(checked) => setFormData({...formData, isFenced: checked})}
+              />
+              <Label htmlFor="isFenced">Surface clôturée</Label>
             </div>
 
             <div>

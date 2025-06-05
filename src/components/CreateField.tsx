@@ -7,6 +7,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft } from 'lucide-react';
 
+enum SaisonEnum {
+  GrandeCompagne = 'Novembre-Avril',
+  Hyvernal = 'Mai-Août',
+  InterSaison = 'Septembre-Novembre',
+}
+
 interface CreateFieldProps {
   onBack: () => void;
   onSave: (field: any) => void;
@@ -19,7 +25,8 @@ const CreateField = ({ onBack, onSave }: CreateFieldProps) => {
     variety: '',
     plantDate: '',
     density: '',
-    area: ''
+    area: '',
+    saison: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -33,7 +40,8 @@ const CreateField = ({ onBack, onSave }: CreateFieldProps) => {
       density: formData.density,
       stage: 'Plantation',
       progress: 5,
-      area: parseFloat(formData.area)
+      area: parseFloat(formData.area),
+      saison: formData.saison
     };
     onSave(newField);
     onBack();
@@ -122,15 +130,29 @@ const CreateField = ({ onBack, onSave }: CreateFieldProps) => {
                 />
               </div>
               <div>
-                <Label htmlFor="density">Densité de semis *</Label>
-                <Input
-                  id="density"
-                  value={formData.density}
-                  onChange={(e) => setFormData({...formData, density: e.target.value})}
-                  placeholder="Ex: 35,000 plants/ha"
-                  required
-                />
+                <Label htmlFor="saison">Saison *</Label>
+                <Select onValueChange={(value) => setFormData({...formData, saison: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez la saison" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={SaisonEnum.GrandeCompagne}>Grande campagne (Novembre-Avril)</SelectItem>
+                    <SelectItem value={SaisonEnum.Hyvernal}>Hivernal (Mai-Août)</SelectItem>
+                    <SelectItem value={SaisonEnum.InterSaison}>Inter-saison (Septembre-Novembre)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
+            </div>
+
+            <div>
+              <Label htmlFor="density">Densité de semis *</Label>
+              <Input
+                id="density"
+                value={formData.density}
+                onChange={(e) => setFormData({...formData, density: e.target.value})}
+                placeholder="Ex: 35,000 plants/ha"
+                required
+              />
             </div>
 
             <div className="flex space-x-2 pt-4">
