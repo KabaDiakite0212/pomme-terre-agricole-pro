@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -74,16 +73,15 @@ const CreateHarvest = ({ onBack, onSave }: CreateHarvestProps) => {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="variety">Variété *</Label>
+                <Label htmlFor="variety">Calibre *</Label>
                 <Select onValueChange={(value) => setFormData({...formData, variety: value})}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez la variété" />
+                    <SelectValue placeholder="Sélectionnez le calibre" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Charlotte">Charlotte</SelectItem>
-                    <SelectItem value="Bintje">Bintje</SelectItem>
-                    <SelectItem value="Désirée">Désirée</SelectItem>
-                    <SelectItem value="Spunta">Spunta</SelectItem>
+                    <SelectItem value="Petit calibre (25-35mm)">Petit calibre (25-35mm)</SelectItem>
+                    <SelectItem value="Calibre moyen">Calibre moyen</SelectItem>
+                    <SelectItem value="Gros calibre">Gros calibre</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -51,7 +51,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">🥔</span>
             </div>
-            <span className="ml-2 text-lg font-semibold text-gray-900">AgroGuinée</span>
+            <span className="ml-2 text-lg font-semibold text-gray-900">Demal</span>
           </div>
           <Button variant="ghost" size="sm" className="lg:hidden" onClick={onClose}>
             <X className="h-5 w-5" />

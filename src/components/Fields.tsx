@@ -13,7 +13,7 @@ const Fields = () => {
       id: 1,
       name: 'Champ A1',
       surface: 'Parcelle Nord',
-      variety: 'Charlotte',
+      variety: 'Gros calibre',
       plantDate: '2024-03-15',
       density: '35,000 plants/ha',
       stage: 'Prêt à récolter',
@@ -24,7 +24,7 @@ const Fields = () => {
       id: 2,
       name: 'Champ B2',
       surface: 'Parcelle Sud',
-      variety: 'Bintje',
+      variety: 'Petit calibre (25-35mm)',
       plantDate: '2024-03-25',
       density: '38,000 plants/ha',
       stage: 'Croissance',
@@ -35,7 +35,7 @@ const Fields = () => {
       id: 3,
       name: 'Champ C3',
       surface: 'Parcelle Est',
-      variety: 'Désirée',
+      variety: 'Calibre moyen',
       plantDate: '2024-04-02',
       density: '32,000 plants/ha',
       stage: 'Jeune plant',
@@ -57,6 +57,31 @@ const Fields = () => {
     );
   }
 
+  const getStageInfo = (stage: string, progress: number) => {
+    if (stage === 'Prêt à récolter') {
+      return {
+        bgColor: 'bg-gradient-to-r from-green-50 to-green-100',
+        textColor: 'text-green-800',
+        progressColor: 'bg-green-500',
+        borderColor: 'border-l-4 border-green-500'
+      };
+    }
+    if (stage === 'Croissance') {
+      return {
+        bgColor: 'bg-gradient-to-r from-amber-50 to-amber-100',
+        textColor: 'text-amber-800',
+        progressColor: 'bg-amber-500',
+        borderColor: 'border-l-4 border-amber-500'
+      };
+    }
+    return {
+      bgColor: 'bg-gradient-to-r from-blue-50 to-blue-100',
+      textColor: 'text-blue-800',
+      progressColor: 'bg-blue-500',
+      borderColor: 'border-l-4 border-blue-500'
+    };
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -73,94 +98,103 @@ const Fields = () => {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">13.1 ha</p>
-              <p className="text-sm text-gray-600">Surface cultivée</p>
+              <p className="text-2xl font-bold text-green-700">13.1 ha</p>
+              <p className="text-sm text-green-600">Surface cultivée</p>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">3</p>
-              <p className="text-sm text-gray-600">Champs actifs</p>
+              <p className="text-2xl font-bold text-blue-700">3</p>
+              <p className="text-sm text-blue-600">Champs actifs</p>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-amber-600">3</p>
-              <p className="text-sm text-gray-600">Variétés</p>
+              <p className="text-2xl font-bold text-amber-700">3</p>
+              <p className="text-sm text-amber-600">Calibres</p>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-purple-600">1</p>
-              <p className="text-sm text-gray-600">Prêt à récolter</p>
+              <p className="text-2xl font-bold text-purple-700">1</p>
+              <p className="text-sm text-purple-600">Prêt à récolter</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {fields.map((field) => (
-          <Card key={field.id} className="hover:shadow-lg transition-shadow duration-300">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                    <Calendar className="h-5 w-5 text-amber-600" />
+        {fields.map((field) => {
+          const stageInfo = getStageInfo(field.stage, field.progress);
+          return (
+            <Card key={field.id} className={`hover:shadow-lg transition-shadow duration-300 ${stageInfo.borderColor}`}>
+              <CardHeader className={stageInfo.bgColor}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                      <Calendar className="h-5 w-5 text-amber-600" />
+                    </div>
+                    <div>
+                      <CardTitle className={`text-lg ${stageInfo.textColor}`}>{field.name}</CardTitle>
+                      <CardDescription className={stageInfo.textColor}>{field.surface} • {field.area} ha</CardDescription>
+                    </div>
                   </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
                   <div>
-                    <CardTitle className="text-lg">{field.name}</CardTitle>
-                    <CardDescription>{field.surface} • {field.area} ha</CardDescription>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className={`text-sm font-medium ${stageInfo.textColor}`}>{field.stage}</span>
+                      <span className="text-sm text-gray-500">{field.progress}%</span>
+                    </div>
+                    <Progress 
+                      value={field.progress} 
+                      className="h-3"
+                      style={{
+                        background: `linear-gradient(to right, ${stageInfo.progressColor.replace('bg-', '#')}, ${stageInfo.progressColor.replace('bg-', '#')})`
+                      }}
+                    />
                   </div>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium">{field.stage}</span>
-                    <span className="text-sm text-gray-500">{field.progress}%</span>
+                  
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <p className="text-gray-600">Calibre</p>
+                      <p className={`font-medium ${stageInfo.textColor}`}>{field.variety}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">Plantation</p>
+                      <p className="font-medium">{new Date(field.plantDate).toLocaleDateString('fr-FR')}</p>
+                    </div>
                   </div>
-                  <Progress value={field.progress} className="h-2" />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-3 text-sm">
+                  
                   <div>
-                    <p className="text-gray-600">Variété</p>
-                    <p className="font-medium">{field.variety}</p>
+                    <p className="text-gray-600 text-sm">Densité de semis</p>
+                    <p className="font-medium text-sm">{field.density}</p>
                   </div>
-                  <div>
-                    <p className="text-gray-600">Plantation</p>
-                    <p className="font-medium">{new Date(field.plantDate).toLocaleDateString('fr-FR')}</p>
-                  </div>
-                </div>
-                
-                <div>
-                  <p className="text-gray-600 text-sm">Densité de semis</p>
-                  <p className="font-medium text-sm">{field.density}</p>
-                </div>
 
-                <div className="flex space-x-2 pt-2">
-                  <Button variant="outline" size="sm" className="flex-1">
-                    Détails
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
-                    Actions
-                  </Button>
+                  <div className="flex space-x-2 pt-2">
+                    <Button variant="outline" size="sm" className="flex-1 border-green-300 text-green-700 hover:bg-green-50">
+                      Détails
+                    </Button>
+                    <Button variant="outline" size="sm" className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50">
+                      Actions
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

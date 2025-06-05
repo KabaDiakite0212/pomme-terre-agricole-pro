@@ -22,7 +22,7 @@ const Inputs = () => {
     },
     {
       id: 2,
-      name: 'Semences Charlotte',
+      name: 'Semences calibre moyen',
       category: 'Semences',
       stock: 180,
       unit: 'kg',
@@ -67,18 +67,41 @@ const Inputs = () => {
 
   const getStockLevel = (stock: number, alertLevel: number) => {
     const ratio = stock / (alertLevel * 2);
-    if (ratio <= 0.5) return { level: 'Critique', color: 'bg-red-500', percentage: ratio * 100 };
-    if (ratio <= 1) return { level: 'Faible', color: 'bg-amber-500', percentage: ratio * 100 };
-    return { level: 'Bon', color: 'bg-green-500', percentage: Math.min(ratio * 100, 100) };
+    if (ratio <= 0.5) return { 
+      level: 'Critique', 
+      color: 'bg-red-500', 
+      percentage: ratio * 100,
+      bgColor: 'bg-gradient-to-r from-red-50 to-red-100',
+      borderColor: 'border-l-4 border-red-500'
+    };
+    if (ratio <= 1) return { 
+      level: 'Faible', 
+      color: 'bg-amber-500', 
+      percentage: ratio * 100,
+      bgColor: 'bg-gradient-to-r from-amber-50 to-amber-100',
+      borderColor: 'border-l-4 border-amber-500'
+    };
+    return { 
+      level: 'Bon', 
+      color: 'bg-green-500', 
+      percentage: Math.min(ratio * 100, 100),
+      bgColor: 'bg-gradient-to-r from-green-50 to-green-100',
+      borderColor: 'border-l-4 border-green-500'
+    };
   };
 
-  const getCategoryColor = (category: string) => {
+  const getCategoryBadge = (category: string) => {
     switch (category) {
-      case 'Engrais': return 'bg-green-100 text-green-800';
-      case 'Semences': return 'bg-blue-100 text-blue-800';
-      case 'Phytosanitaire': return 'bg-red-100 text-red-800';
-      case 'Amendement': return 'bg-amber-100 text-amber-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Engrais': 
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">{category}</Badge>;
+      case 'Semences': 
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">{category}</Badge>;
+      case 'Phytosanitaire': 
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">{category}</Badge>;
+      case 'Amendement': 
+        return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">{category}</Badge>;
+      default: 
+        return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">{category}</Badge>;
     }
   };
 
@@ -98,35 +121,35 @@ const Inputs = () => {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">8,340,000 GNF</p>
-              <p className="text-sm text-gray-600">Valeur totale</p>
+              <p className="text-2xl font-bold text-green-700">8,340,000 GNF</p>
+              <p className="text-sm text-green-600">Valeur totale</p>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">4</p>
-              <p className="text-sm text-gray-600">Types d'intrants</p>
+              <p className="text-2xl font-bold text-blue-700">4</p>
+              <p className="text-sm text-blue-600">Types d'intrants</p>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-amber-600">2</p>
-              <p className="text-sm text-gray-600">Stocks faibles</p>
+              <p className="text-2xl font-bold text-amber-700">2</p>
+              <p className="text-sm text-amber-600">Stocks faibles</p>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-red-600">1</p>
-              <p className="text-sm text-gray-600">Alert critique</p>
+              <p className="text-2xl font-bold text-red-700">1</p>
+              <p className="text-sm text-red-600">Alert critique</p>
             </div>
           </CardContent>
         </Card>
@@ -137,19 +160,17 @@ const Inputs = () => {
         {inputs.map((input) => {
           const stockInfo = getStockLevel(input.stock, input.alertLevel);
           return (
-            <Card key={input.id} className="hover:shadow-lg transition-shadow duration-300">
-              <CardHeader>
+            <Card key={input.id} className={`hover:shadow-lg transition-shadow duration-300 ${stockInfo.borderColor}`}>
+              <CardHeader className={stockInfo.bgColor}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                       <Database className="h-5 w-5 text-blue-600" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg">{input.name}</CardTitle>
+                      <CardTitle className="text-lg text-gray-800">{input.name}</CardTitle>
                       <CardDescription>
-                        <Badge className={getCategoryColor(input.category)} variant="secondary">
-                          {input.category}
-                        </Badge>
+                        {getCategoryBadge(input.category)}
                       </CardDescription>
                     </div>
                   </div>
@@ -171,13 +192,18 @@ const Inputs = () => {
                         Seuil: {input.alertLevel} {input.unit}
                       </span>
                     </div>
-                    <Progress value={stockInfo.percentage} className="h-2" />
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div 
+                        className={`h-3 rounded-full transition-all duration-500 ${stockInfo.color}`}
+                        style={{ width: `${Math.min(stockInfo.percentage, 100)}%` }}
+                      />
+                    </div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
                       <p className="text-gray-600">Valeur totale</p>
-                      <p className="font-medium">{input.totalValue.toLocaleString()} GNF</p>
+                      <p className="font-medium text-green-700">{input.totalValue.toLocaleString()} GNF</p>
                     </div>
                     <div>
                       <p className="text-gray-600">Dernier achat</p>
@@ -186,10 +212,10 @@ const Inputs = () => {
                   </div>
 
                   <div className="flex space-x-2 pt-2">
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button variant="outline" size="sm" className="flex-1 border-green-300 text-green-700 hover:bg-green-50">
                       Utiliser
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button variant="outline" size="sm" className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50">
                       Acheter
                     </Button>
                   </div>
