@@ -1,13 +1,16 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Folder, Edit, History } from 'lucide-react';
 import CreateSurface from './CreateSurface';
+import ModifySurfaceModal from './modals/ModifySurfaceModal';
+import SurfaceHistoryModal from './modals/SurfaceHistoryModal';
 
 const Surfaces = () => {
   const [showCreate, setShowCreate] = useState(false);
+  const [modifyModal, setModifyModal] = useState({ isOpen: false, surface: null });
+  const [historyModal, setHistoryModal] = useState({ isOpen: false, surface: null });
   const [surfaces, setSurfaces] = useState([
     {
       id: 1,
@@ -42,12 +45,18 @@ const Surfaces = () => {
     setSurfaces([...surfaces, newSurface]);
   };
 
-  const handleModify = (surfaceId: number) => {
-    alert(`Modification de la surface ${surfaceId}`);
+  const handleModify = (surface: any) => {
+    setModifyModal({ isOpen: true, surface });
   };
 
-  const handleHistory = (surfaceId: number) => {
-    alert(`Historique de la surface ${surfaceId}`);
+  const handleHistory = (surface: any) => {
+    setHistoryModal({ isOpen: true, surface });
+  };
+
+  const handleSaveModifiedSurface = (updatedSurface: any) => {
+    setSurfaces(surfaces.map(surface => 
+      surface.id === updatedSurface.id ? updatedSurface : surface
+    ));
   };
 
   if (showCreate) {
@@ -155,7 +164,7 @@ const Surfaces = () => {
                     variant="outline" 
                     size="sm" 
                     className="flex-1 border-green-300 text-green-700 hover:bg-green-50"
-                    onClick={() => handleModify(surface.id)}
+                    onClick={() => handleModify(surface)}
                   >
                     <Edit className="h-4 w-4 mr-1" />
                     Modifier
@@ -164,7 +173,7 @@ const Surfaces = () => {
                     variant="outline" 
                     size="sm" 
                     className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50"
-                    onClick={() => handleHistory(surface.id)}
+                    onClick={() => handleHistory(surface)}
                   >
                     <History className="h-4 w-4 mr-1" />
                     Historique
@@ -175,6 +184,19 @@ const Surfaces = () => {
           </Card>
         ))}
       </div>
+
+      <ModifySurfaceModal
+        isOpen={modifyModal.isOpen}
+        onClose={() => setModifyModal({ isOpen: false, surface: null })}
+        surface={modifyModal.surface}
+        onSave={handleSaveModifiedSurface}
+      />
+
+      <SurfaceHistoryModal
+        isOpen={historyModal.isOpen}
+        onClose={() => setHistoryModal({ isOpen: false, surface: null })}
+        surface={historyModal.surface}
+      />
     </div>
   );
 };

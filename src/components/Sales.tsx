@@ -1,18 +1,19 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Calendar, Eye, Check } from 'lucide-react';
 import CreateSale from './CreateSale';
+import SaleDetailsModal from './modals/SaleDetailsModal';
 
 const Sales = () => {
   const [showCreate, setShowCreate] = useState(false);
+  const [detailsModal, setDetailsModal] = useState({ isOpen: false, sale: null });
   const [sales, setSales] = useState([
     {
       id: 1,
       clientName: 'Restaurant Le Jardin',
-      product: 'Pommes de terre Charlotte',
+      product: 'Pommes de terre gros calibre',
       quantity: 500,
       unitPrice: 24000,
       totalAmount: 12000000,
@@ -23,7 +24,7 @@ const Sales = () => {
     {
       id: 2,
       clientName: 'Supermarché Central',
-      product: 'Pommes de terre Bintje',
+      product: 'Pommes de terre petit calibre (25-35mm)',
       quantity: 800,
       unitPrice: 18000,
       totalAmount: 14400000,
@@ -34,18 +35,18 @@ const Sales = () => {
     {
       id: 3,
       clientName: 'Coopérative Locale Kindia',
-      product: 'Pommes de terre Désirée',
+      product: 'Pommes de terre calibre moyen',
       quantity: 1200,
       unitPrice: 20000,
       totalAmount: 24000000,
       saleDate: '2024-05-15',
       paymentStatus: 'Payé',
-      paymentMethod: 'Espèce'
+      paymentMethod: 'Espèce (cash)'
     },
     {
       id: 4,
       clientName: 'Marché Madina',
-      product: 'Pommes de terre Charlotte',
+      product: 'Pommes de terre gros calibre',
       quantity: 300,
       unitPrice: 32000,
       totalAmount: 9600000,
@@ -59,8 +60,8 @@ const Sales = () => {
     setSales([...sales, newSale]);
   };
 
-  const handleViewDetails = (saleId: number) => {
-    alert(`Voir les détails de la vente ${saleId}`);
+  const handleViewDetails = (sale: any) => {
+    setDetailsModal({ isOpen: true, sale });
   };
 
   const handleMarkPaid = (saleId: number) => {
@@ -199,7 +200,7 @@ const Sales = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => handleViewDetails(sale.id)}
+                      onClick={() => handleViewDetails(sale)}
                     >
                       <Eye className="h-4 w-4 mr-1" />
                       Voir détails
@@ -221,6 +222,12 @@ const Sales = () => {
           </div>
         </CardContent>
       </Card>
+
+      <SaleDetailsModal
+        isOpen={detailsModal.isOpen}
+        onClose={() => setDetailsModal({ isOpen: false, sale: null })}
+        sale={detailsModal.sale}
+      />
     </div>
   );
 };

@@ -1,18 +1,19 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Package, ShoppingCart, Edit } from 'lucide-react';
 import CreateHarvest from './CreateHarvest';
+import SellHarvestModal from './modals/SellHarvestModal';
 
 const Harvests = () => {
   const [showCreate, setShowCreate] = useState(false);
+  const [sellModal, setSellModal] = useState({ isOpen: false, harvest: null });
   const [harvests, setHarvests] = useState([
     {
       id: 1,
       fieldName: 'Champ A1',
-      variety: 'Charlotte',
+      variety: 'Gros calibre',
       harvestDate: '2024-05-20',
       quantity: 2800,
       quality: 'Excellente',
@@ -25,7 +26,7 @@ const Harvests = () => {
     {
       id: 2,
       fieldName: 'Champ B2',
-      variety: 'Bintje',
+      variety: 'Petit calibre (25-35mm)',
       harvestDate: '2024-05-15',
       quantity: 3200,
       quality: 'Bonne',
@@ -41,8 +42,22 @@ const Harvests = () => {
     setHarvests([...harvests, newHarvest]);
   };
 
-  const handleSell = (harvestId: number) => {
-    alert(`Vendre la récolte ${harvestId}`);
+  const handleSell = (harvest: any) => {
+    setSellModal({ isOpen: true, harvest });
+  };
+
+  const handleSellConfirm = (saleData: any) => {
+    // Update harvest stock
+    setHarvests(harvests.map(harvest => 
+      harvest.id === saleData.harvestId 
+        ? { 
+            ...harvest, 
+            sold: harvest.sold + saleData.quantity,
+            inStock: harvest.inStock - saleData.quantity
+          }
+        : harvest
+    ));
+    console.log('Vente créée:', saleData);
   };
 
   const handleModify = (harvestId: number) => {
@@ -183,7 +198,8 @@ const Harvests = () => {
                     variant="outline" 
                     size="sm" 
                     className="flex-1 border-green-300 text-green-700 hover:bg-green-50"
-                    onClick={() => handleSell(harvest.id)}
+                    onClick={() => handleSell(harvest)}
+                    disabled={harvest.inStock === 0}
                   >
                     <ShoppingCart className="h-4 w-4 mr-1" />
                     Vendre
@@ -203,6 +219,13 @@ const Harvests = () => {
           </Card>
         ))}
       </div>
+
+      <SellHarvestModal
+        isOpen={sellModal.isOpen}
+        onClose={() => setSellModal({ isOpen: false, harvest: null })}
+        harvest={sellModal.harvest}
+        onSell={handleSellConfirm}
+      />
     </div>
   );
 };

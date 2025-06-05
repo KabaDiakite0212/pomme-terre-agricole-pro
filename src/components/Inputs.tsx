@@ -1,14 +1,16 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Plus, Database, Package, ShoppingCart } from 'lucide-react';
 import CreateInput from './CreateInput';
+import UseInputModal from './modals/UseInputModal';
+import BuyInputModal from './modals/BuyInputModal';
 
 const Inputs = () => {
   const [showCreate, setShowCreate] = useState(false);
+  const [useModal, setUseModal] = useState({ isOpen: false, input: null });
+  const [buyModal, setBuyModal] = useState({ isOpen: false, input: null });
   const [inputs, setInputs] = useState([
     {
       id: 1,
@@ -56,12 +58,35 @@ const Inputs = () => {
     setInputs([...inputs, newInput]);
   };
 
-  const handleUse = (inputId: number) => {
-    alert(`Utiliser l'intrant ${inputId}`);
+  const handleUse = (input: any) => {
+    setUseModal({ isOpen: true, input });
   };
 
-  const handleBuy = (inputId: number) => {
-    alert(`Acheter l'intrant ${inputId}`);
+  const handleBuy = (input: any) => {
+    setBuyModal({ isOpen: true, input });
+  };
+
+  const handleUseConfirm = (useData: any) => {
+    setInputs(inputs.map(input => 
+      input.id === useData.inputId 
+        ? { ...input, stock: input.stock - useData.quantity }
+        : input
+    ));
+    console.log('Utilisation enregistrée:', useData);
+  };
+
+  const handleBuyConfirm = (buyData: any) => {
+    setInputs(inputs.map(input => 
+      input.id === buyData.inputId 
+        ? { 
+            ...input, 
+            stock: input.stock + buyData.quantity,
+            lastPurchase: buyData.purchaseDate,
+            totalValue: input.totalValue + buyData.totalCost
+          }
+        : input
+    ));
+    console.log('Achat enregistré:', buyData);
   };
 
   if (showCreate) {
@@ -224,7 +249,8 @@ const Inputs = () => {
                       variant="outline" 
                       size="sm" 
                       className="flex-1 border-green-300 text-green-700 hover:bg-green-50"
-                      onClick={() => handleUse(input.id)}
+                      onClick={() => handleUse(input)}
+                      disabled={input.stock === 0}
                     >
                       <Package className="h-4 w-4 mr-1" />
                       Utiliser
@@ -233,7 +259,7 @@ const Inputs = () => {
                       variant="outline" 
                       size="sm" 
                       className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50"
-                      onClick={() => handleBuy(input.id)}
+                      onClick={() => handleBuy(input)}
                     >
                       <ShoppingCart className="h-4 w-4 mr-1" />
                       Acheter
@@ -245,6 +271,20 @@ const Inputs = () => {
           );
         })}
       </div>
+
+      <UseInputModal
+        isOpen={useModal.isOpen}
+        onClose={() => setUseModal({ isOpen: false, input: null })}
+        input={useModal.input}
+        onUse={handleUseConfirm}
+      />
+
+      <BuyInputModal
+        isOpen={buyModal.isOpen}
+        onClose={() => setBuyModal({ isOpen: false, input: null })}
+        input={buyModal.input}
+        onBuy={handleBuyConfirm}
+      />
     </div>
   );
 };
