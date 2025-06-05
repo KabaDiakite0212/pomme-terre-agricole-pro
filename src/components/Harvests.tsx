@@ -5,10 +5,12 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Package, ShoppingCart, Edit } from 'lucide-react';
 import CreateHarvest from './CreateHarvest';
 import SellHarvestModal from './modals/SellHarvestModal';
+import ModifyHarvestModal from './modals/ModifyHarvestModal';
 
 const Harvests = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [sellModal, setSellModal] = useState({ isOpen: false, harvest: null });
+  const [modifyModal, setModifyModal] = useState({ isOpen: false, harvest: null });
   const [harvests, setHarvests] = useState([
     {
       id: 1,
@@ -60,8 +62,15 @@ const Harvests = () => {
     console.log('Vente créée:', saleData);
   };
 
-  const handleModify = (harvestId: number) => {
-    alert(`Modifier la récolte ${harvestId}`);
+  const handleModify = (harvest: any) => {
+    setModifyModal({ isOpen: true, harvest });
+  };
+
+  const handleModifyConfirm = (modifiedHarvest: any) => {
+    setHarvests(harvests.map(harvest => 
+      harvest.id === modifiedHarvest.id ? modifiedHarvest : harvest
+    ));
+    console.log('Récolte modifiée:', modifiedHarvest);
   };
 
   if (showCreate) {
@@ -208,7 +217,7 @@ const Harvests = () => {
                     variant="outline" 
                     size="sm" 
                     className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50"
-                    onClick={() => handleModify(harvest.id)}
+                    onClick={() => handleModify(harvest)}
                   >
                     <Edit className="h-4 w-4 mr-1" />
                     Modifier
@@ -225,6 +234,13 @@ const Harvests = () => {
         onClose={() => setSellModal({ isOpen: false, harvest: null })}
         harvest={sellModal.harvest}
         onSell={handleSellConfirm}
+      />
+
+      <ModifyHarvestModal
+        isOpen={modifyModal.isOpen}
+        onClose={() => setModifyModal({ isOpen: false, harvest: null })}
+        harvest={modifyModal.harvest}
+        onModify={handleModifyConfirm}
       />
     </div>
   );

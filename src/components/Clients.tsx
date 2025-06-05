@@ -1,13 +1,14 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Users, History } from 'lucide-react';
 import CreateClient from './CreateClient';
+import ClientHistoryModal from './modals/ClientHistoryModal';
 
 const Clients = () => {
   const [showCreate, setShowCreate] = useState(false);
+  const [historyModal, setHistoryModal] = useState({ isOpen: false, client: null });
   const [clients, setClients] = useState([
     {
       id: 1,
@@ -63,8 +64,8 @@ const Clients = () => {
     setClients([...clients, newClient]);
   };
 
-  const handleHistory = (clientId: number) => {
-    alert(`Historique du client ${clientId}`);
+  const handleHistory = (client: any) => {
+    setHistoryModal({ isOpen: true, client });
   };
 
   if (showCreate) {
@@ -213,7 +214,7 @@ const Clients = () => {
                     variant="outline" 
                     size="sm" 
                     className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50"
-                    onClick={() => handleHistory(client.id)}
+                    onClick={() => handleHistory(client)}
                   >
                     <History className="h-4 w-4 mr-1" />
                     Historique
@@ -224,6 +225,12 @@ const Clients = () => {
           </Card>
         ))}
       </div>
+
+      <ClientHistoryModal
+        isOpen={historyModal.isOpen}
+        onClose={() => setHistoryModal({ isOpen: false, client: null })}
+        client={historyModal.client}
+      />
     </div>
   );
 };
