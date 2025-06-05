@@ -1,13 +1,18 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Plus, Calendar, Eye, Settings } from 'lucide-react';
 import CreateField from './CreateField';
+import FieldDetailsModal from './modals/FieldDetailsModal';
+import FieldActionsModal from './modals/FieldActionsModal';
 
 const Fields = () => {
   const [showCreate, setShowCreate] = useState(false);
+  const [selectedField, setSelectedField] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showActionsModal, setShowActionsModal] = useState(false);
+  
   const [fields, setFields] = useState([
     {
       id: 1,
@@ -48,12 +53,14 @@ const Fields = () => {
     setFields([...fields, newField]);
   };
 
-  const handleDetails = (fieldId: number) => {
-    alert(`Détails du champ ${fieldId}`);
+  const handleDetails = (field: any) => {
+    setSelectedField(field);
+    setShowDetailsModal(true);
   };
 
-  const handleActions = (fieldId: number) => {
-    alert(`Actions pour le champ ${fieldId}`);
+  const handleActions = (field: any) => {
+    setSelectedField(field);
+    setShowActionsModal(true);
   };
 
   if (showCreate) {
@@ -192,7 +199,7 @@ const Fields = () => {
                       variant="outline" 
                       size="sm" 
                       className="flex-1 border-green-300 text-green-700 hover:bg-green-50"
-                      onClick={() => handleDetails(field.id)}
+                      onClick={() => handleDetails(field)}
                     >
                       <Eye className="h-4 w-4 mr-1" />
                       Détails
@@ -201,7 +208,7 @@ const Fields = () => {
                       variant="outline" 
                       size="sm" 
                       className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50"
-                      onClick={() => handleActions(field.id)}
+                      onClick={() => handleActions(field)}
                     >
                       <Settings className="h-4 w-4 mr-1" />
                       Actions
@@ -213,6 +220,18 @@ const Fields = () => {
           );
         })}
       </div>
+
+      <FieldDetailsModal
+        isOpen={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        field={selectedField}
+      />
+
+      <FieldActionsModal
+        isOpen={showActionsModal}
+        onClose={() => setShowActionsModal(false)}
+        field={selectedField}
+      />
     </div>
   );
 };
