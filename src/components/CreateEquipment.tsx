@@ -22,7 +22,11 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
     lastMaintenance: '',
     nextMaintenance: '',
     value: '',
-    description: ''
+    description: '',
+    caracteristique: '',
+    dateMiseService: '',
+    dureeAmortissement: '',
+    quantite: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -36,7 +40,11 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
       lastMaintenance: formData.lastMaintenance,
       nextMaintenance: formData.nextMaintenance,
       value: parseFloat(formData.value),
-      description: formData.description
+      description: formData.description,
+      caracteristique: formData.caracteristique,
+      dateMiseService: formData.dateMiseService,
+      dureeAmortissement: parseInt(formData.dureeAmortissement),
+      quantite: parseInt(formData.quantite)
     };
     onSave(newEquipment);
     onBack();
@@ -102,6 +110,20 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
                 />
               </div>
               <div>
+                <Label htmlFor="quantite">Quantité *</Label>
+                <Input
+                  id="quantite"
+                  type="number"
+                  value={formData.quantite}
+                  onChange={(e) => setFormData({...formData, quantite: e.target.value})}
+                  placeholder="Ex: 1"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
                 <Label htmlFor="status">Statut *</Label>
                 <Select onValueChange={(value) => setFormData({...formData, status: value})}>
                   <SelectTrigger>
@@ -113,6 +135,16 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
                     <SelectItem value="Hors service">Hors service</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div>
+                <Label htmlFor="dureeAmortissement">Durée d'amortissement (années)</Label>
+                <Input
+                  id="dureeAmortissement"
+                  type="number"
+                  value={formData.dureeAmortissement}
+                  onChange={(e) => setFormData({...formData, dureeAmortissement: e.target.value})}
+                  placeholder="Ex: 10"
+                />
               </div>
             </div>
 
@@ -128,6 +160,15 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
                 />
               </div>
               <div>
+                <Label htmlFor="dateMiseService">Date de mise en service</Label>
+                <Input
+                  id="dateMiseService"
+                  type="date"
+                  value={formData.dateMiseService}
+                  onChange={(e) => setFormData({...formData, dateMiseService: e.target.value})}
+                />
+              </div>
+              <div>
                 <Label htmlFor="lastMaintenance">Dernière maintenance</Label>
                 <Input
                   id="lastMaintenance"
@@ -136,15 +177,27 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
                   onChange={(e) => setFormData({...formData, lastMaintenance: e.target.value})}
                 />
               </div>
-              <div>
-                <Label htmlFor="nextMaintenance">Prochaine maintenance</Label>
-                <Input
-                  id="nextMaintenance"
-                  type="date"
-                  value={formData.nextMaintenance}
-                  onChange={(e) => setFormData({...formData, nextMaintenance: e.target.value})}
-                />
-              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="nextMaintenance">Prochaine maintenance</Label>
+              <Input
+                id="nextMaintenance"
+                type="date"
+                value={formData.nextMaintenance}
+                onChange={(e) => setFormData({...formData, nextMaintenance: e.target.value})}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="caracteristique">Caractéristiques techniques</Label>
+              <Textarea
+                id="caracteristique"
+                value={formData.caracteristique}
+                onChange={(e) => setFormData({...formData, caracteristique: e.target.value})}
+                placeholder="Puissance, dimensions, capacité, etc."
+                rows={2}
+              />
             </div>
 
             <div>
@@ -153,7 +206,7 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
-                placeholder="Description de l'équipement, spécifications techniques..."
+                placeholder="Description de l'équipement, utilisation..."
                 rows={3}
               />
             </div>

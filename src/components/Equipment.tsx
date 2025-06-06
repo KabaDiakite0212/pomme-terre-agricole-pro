@@ -18,7 +18,11 @@ const Equipment = () => {
       lastMaintenance: '2024-05-10',
       nextMaintenance: '2024-08-10',
       value: 25000000,
-      description: 'Tracteur 50 CV pour labour et préparation du sol'
+      description: 'Tracteur 50 CV pour labour et préparation du sol',
+      caracteristique: '50 CV, 4 roues motrices, cabine climatisée',
+      dateMiseService: '2023-06-20',
+      dureeAmortissement: 10,
+      quantite: 1
     },
     {
       id: 2,
@@ -29,7 +33,11 @@ const Equipment = () => {
       lastMaintenance: '2024-05-20',
       nextMaintenance: '2024-06-20',
       value: 2500000,
-      description: 'Motopompe pour irrigation des cultures'
+      description: 'Motopompe pour irrigation des cultures',
+      caracteristique: 'Débit 1000 L/min, essence 4 temps',
+      dateMiseService: '2023-03-25',
+      dureeAmortissement: 5,
+      quantite: 2
     },
     {
       id: 3,
@@ -40,7 +48,11 @@ const Equipment = () => {
       lastMaintenance: '2024-04-15',
       nextMaintenance: '2024-10-15',
       value: 1800000,
-      description: 'Charrue pour retournement du sol'
+      description: 'Charrue pour retournement du sol',
+      caracteristique: '3 socs réversibles, largeur 90cm',
+      dateMiseService: '2023-06-15',
+      dureeAmortissement: 8,
+      quantite: 1
     }
   ]);
 
@@ -149,7 +161,7 @@ const Equipment = () => {
                   </div>
                   <div>
                     <CardTitle className="text-lg text-blue-800">{item.name}</CardTitle>
-                    <CardDescription className="text-blue-600">{item.type}</CardDescription>
+                    <CardDescription className="text-blue-600">{item.type} • Qté: {item.quantite}</CardDescription>
                   </div>
                 </div>
                 {getStatusBadge(item.status)}
@@ -159,6 +171,13 @@ const Equipment = () => {
               <div className="space-y-3">
                 <p className="text-sm text-gray-700">{item.description}</p>
                 
+                {item.caracteristique && (
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Caractéristiques</p>
+                    <p className="text-sm text-gray-800">{item.caracteristique}</p>
+                  </div>
+                )}
+                
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm font-medium text-gray-600">Valeur</p>
@@ -167,9 +186,24 @@ const Equipment = () => {
                     </p>
                   </div>
                   <div>
+                    <p className="text-sm font-medium text-gray-600">Amortissement</p>
+                    <p className="text-sm text-gray-800">
+                      {item.dureeAmortissement} ans
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
                     <p className="text-sm font-medium text-gray-600">Acquisition</p>
                     <p className="text-sm text-gray-800">
                       {new Date(item.acquisitionDate).toLocaleDateString('fr-FR')}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Mise en service</p>
+                    <p className="text-sm text-gray-800">
+                      {item.dateMiseService ? new Date(item.dateMiseService).toLocaleDateString('fr-FR') : 'Non renseigné'}
                     </p>
                   </div>
                 </div>

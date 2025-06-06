@@ -10,7 +10,8 @@ import {
   X,
   BarChart3,
   Package,
-  User
+  User,
+  Wrench
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -24,6 +25,7 @@ const navigation = [
   { name: 'Champs de pommes de terre', href: '/fields', icon: Calendar },
   { name: 'Récoltes & Stock', href: '/harvests', icon: Package },
   { name: 'Intrants & Stocks', href: '/inputs', icon: Database },
+  { name: 'Équipements & Matériels', href: '/equipment', icon: Wrench },
   { name: 'Clients', href: '/clients', icon: Users },
   { name: 'Ventes', href: '/sales', icon: Calendar },
   { name: 'Profil', href: '/profile', icon: User },
