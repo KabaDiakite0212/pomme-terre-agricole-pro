@@ -1,7 +1,7 @@
 
-import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ApiService } from '@/services/api';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'react-toastify';
 
 export interface InputUsage {
   inputId: string;
@@ -22,54 +22,53 @@ export interface InputPurchase {
 }
 
 export const useInputManagement = () => {
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const useInput = async (usage: InputUsage) => {
-    setIsLoading(true);
-    try {
-      await ApiService.useInput(usage.inputId, usage);
-      toast({
-        title: "Utilisation enregistrée",
-        description: `${usage.quantity} unités utilisées avec succès`,
+  const useInputMutation = useMutation({
+    mutationFn: async (usage: InputUsage) => {
+      return await ApiService.useInput(usage.inputId, usage);
+    },
+    onSuccess: (_, usage) => {
+      queryClient.invalidateQueries({ queryKey: ['inputs'] });
+      
+      toast.success(`${usage.quantity} unités utilisées avec succès`, {
+        position: "top-right",
+        autoClose: 3000,
       });
-      return true;
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible d'enregistrer l'utilisation",
-        variant: "destructive",
+    },
+    onError: (error) => {
+      console.error('Erreur lors de l\'utilisation:', error);
+      toast.error('Impossible d\'enregistrer l\'utilisation', {
+        position: "top-right",
+        autoClose: 3000,
       });
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+  });
 
-  const buyInput = async (purchase: InputPurchase) => {
-    setIsLoading(true);
-    try {
-      await ApiService.buyInput(purchase.inputId, purchase);
-      toast({
-        title: "Achat enregistré",
-        description: `Achat de ${purchase.quantity} unités enregistré avec succès`,
+  const buyInputMutation = useMutation({
+    mutationFn: async (purchase: InputPurchase) => {
+      return await ApiService.buyInput(purchase.inputId, purchase);
+    },
+    onSuccess: (_, purchase) => {
+      queryClient.invalidateQueries({ queryKey: ['inputs'] });
+      
+      toast.success(`Achat de ${purchase.quantity} unités enregistré avec succès`, {
+        position: "top-right",
+        autoClose: 3000,
       });
-      return true;
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible d'enregistrer l'achat",
-        variant: "destructive",
+    },
+    onError: (error) => {
+      console.error('Erreur lors de l\'achat:', error);
+      toast.error('Impossible d\'enregistrer l\'achat', {
+        position: "top-right",
+        autoClose: 3000,
       });
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+  });
 
   return {
-    useInput,
-    buyInput,
-    isLoading
+    useInput: useInputMutation.mutateAsync,
+    buyInput: buyInputMutation.mutateAsync,
+    isLoading: useInputMutation.isPending || buyInputMutation.isPending,
   };
 };

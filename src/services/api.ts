@@ -1,141 +1,124 @@
 
+import axios from 'axios';
+
 const API_BASE_URL = 'http://localhost:3001/api';
 
-export class ApiService {
-  private static async request(endpoint: string, options?: RequestInit) {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-      ...options,
-    });
+// Créer une instance Axios avec configuration de base
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.statusText}`);
-    }
-
-    return response.json();
+// Intercepteur pour gérer les erreurs globalement
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('API Error:', error);
+    throw error;
   }
+);
 
+export class ApiService {
   // Surfaces API
   static async getSurfaces() {
-    return this.request('/surfaces');
+    const response = await api.get('/surfaces');
+    return response.data;
   }
 
   static async createSurface(data: any) {
-    return this.request('/surfaces', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    const response = await api.post('/surfaces', data);
+    return response.data;
   }
 
   static async updateSurface(id: string, data: any) {
-    return this.request(`/surfaces/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    });
+    const response = await api.patch(`/surfaces/${id}`, data);
+    return response.data;
   }
 
   // Fields API
   static async getFields() {
-    return this.request('/fields');
+    const response = await api.get('/fields');
+    return response.data;
   }
 
   static async createField(data: any) {
-    return this.request('/fields', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    const response = await api.post('/fields', data);
+    return response.data;
   }
 
   static async createFieldAction(fieldId: string, action: any) {
-    return this.request(`/fields/${fieldId}/actions`, {
-      method: 'POST',
-      body: JSON.stringify(action),
-    });
+    const response = await api.post(`/fields/${fieldId}/actions`, action);
+    return response.data;
   }
 
   // Harvests API
   static async getHarvests() {
-    return this.request('/harvests');
+    const response = await api.get('/harvests');
+    return response.data;
   }
 
   static async createHarvest(data: any) {
-    return this.request('/harvests', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    const response = await api.post('/harvests', data);
+    return response.data;
   }
 
   static async updateHarvest(id: string, data: any) {
-    return this.request(`/harvests/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    });
+    const response = await api.patch(`/harvests/${id}`, data);
+    return response.data;
   }
 
   static async updateHarvestStock(id: string, quantitySold: number) {
-    return this.request(`/harvests/${id}/stock`, {
-      method: 'PATCH',
-      body: JSON.stringify({ quantitySold }),
-    });
+    const response = await api.patch(`/harvests/${id}/stock`, { quantitySold });
+    return response.data;
   }
 
   // Sales API
   static async getSales() {
-    return this.request('/sales');
+    const response = await api.get('/sales');
+    return response.data;
   }
 
   static async createSale(data: any) {
-    return this.request('/sales', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    const response = await api.post('/sales', data);
+    return response.data;
   }
 
   // Inputs API
   static async getInputs() {
-    return this.request('/inputs');
+    const response = await api.get('/inputs');
+    return response.data;
   }
 
   static async createInput(data: any) {
-    return this.request('/inputs', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    const response = await api.post('/inputs', data);
+    return response.data;
   }
 
   static async updateInput(id: string, data: any) {
-    return this.request(`/inputs/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    });
+    const response = await api.patch(`/inputs/${id}`, data);
+    return response.data;
   }
 
   static async useInput(inputId: string, usage: any) {
-    return this.request(`/inputs/${inputId}/use`, {
-      method: 'POST',
-      body: JSON.stringify(usage),
-    });
+    const response = await api.post(`/inputs/${inputId}/use`, usage);
+    return response.data;
   }
 
   static async buyInput(inputId: string, purchase: any) {
-    return this.request(`/inputs/${inputId}/buy`, {
-      method: 'POST',
-      body: JSON.stringify(purchase),
-    });
+    const response = await api.post(`/inputs/${inputId}/buy`, purchase);
+    return response.data;
   }
 
   // Clients API
   static async getClients() {
-    return this.request('/clients');
+    const response = await api.get('/clients');
+    return response.data;
   }
 
   static async createClient(data: any) {
-    return this.request('/clients', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    const response = await api.post('/clients', data);
+    return response.data;
   }
 }

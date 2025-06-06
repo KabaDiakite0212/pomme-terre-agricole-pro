@@ -2,75 +2,39 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Package, ShoppingCart, Edit } from 'lucide-react';
+import { Plus, Package, ShoppingCart, Edit, Loader2 } from 'lucide-react';
+import { useHarvests } from '@/hooks/useHarvests';
 import CreateHarvest from './CreateHarvest';
 import SellHarvestModal from './modals/SellHarvestModal';
 import ModifyHarvestModal from './modals/ModifyHarvestModal';
 
 const Harvests = () => {
+  const { data: harvests = [], isLoading, error } = useHarvests();
   const [showCreate, setShowCreate] = useState(false);
   const [sellModal, setSellModal] = useState({ isOpen: false, harvest: null });
   const [modifyModal, setModifyModal] = useState({ isOpen: false, harvest: null });
-  const [harvests, setHarvests] = useState([
-    {
-      id: 1,
-      fieldName: 'Champ A1',
-      variety: 'Gros calibre',
-      harvestDate: '2024-05-20',
-      quantity: 2800,
-      quality: 'Excellente',
-      storageLocation: 'Entrepôt Principal',
-      unitPrice: 25000,
-      totalValue: 70000000,
-      sold: 1200,
-      inStock: 1600
-    },
-    {
-      id: 2,
-      fieldName: 'Champ B2',
-      variety: 'Petit calibre (25-35mm)',
-      harvestDate: '2024-05-15',
-      quantity: 3200,
-      quality: 'Bonne',
-      storageLocation: 'Entrepôt Nord',
-      unitPrice: 18000,
-      totalValue: 57600000,
-      sold: 800,
-      inStock: 2400
-    }
-  ]);
 
-  const handleSaveHarvest = (newHarvest: any) => {
-    setHarvests([...harvests, newHarvest]);
+  const handleSaveHarvest = () => {
+    // React Query will automatically refetch when we invalidate the query
+    setShowCreate(false);
   };
 
   const handleSell = (harvest: any) => {
     setSellModal({ isOpen: true, harvest });
   };
 
-  const handleSellConfirm = (saleData: any) => {
-    // Update harvest stock
-    setHarvests(harvests.map(harvest => 
-      harvest.id === saleData.harvestId 
-        ? { 
-            ...harvest, 
-            sold: harvest.sold + saleData.quantity,
-            inStock: harvest.inStock - saleData.quantity
-          }
-        : harvest
-    ));
-    console.log('Vente créée:', saleData);
+  const handleSellConfirm = () => {
+    // React Query will handle the data refresh automatically
+    setSellModal({ isOpen: false, harvest: null });
   };
 
   const handleModify = (harvest: any) => {
     setModifyModal({ isOpen: true, harvest });
   };
 
-  const handleModifyConfirm = (modifiedHarvest: any) => {
-    setHarvests(harvests.map(harvest => 
-      harvest.id === modifiedHarvest.id ? modifiedHarvest : harvest
-    ));
-    console.log('Récolte modifiée:', modifiedHarvest);
+  const handleModifyConfirm = () => {
+    // React Query will handle the data refresh automatically
+    setModifyModal({ isOpen: false, harvest: null });
   };
 
   if (showCreate) {
@@ -79,6 +43,30 @@ const Harvests = () => {
         onBack={() => setShowCreate(false)} 
         onSave={handleSaveHarvest}
       />
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+        <span className="ml-2 text-gray-600">Chargement des récoltes...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-600">Erreur lors du chargement des récoltes</p>
+        <Button 
+          onClick={() => window.location.reload()} 
+          className="mt-4"
+          variant="outline"
+        >
+          Réessayer
+        </Button>
+      </div>
     );
   }
 
@@ -93,10 +81,10 @@ const Harvests = () => {
   };
 
   const getTotalStats = () => {
-    const totalHarvested = harvests.reduce((sum, harvest) => sum + harvest.quantity, 0);
-    const totalValue = harvests.reduce((sum, harvest) => sum + harvest.totalValue, 0);
-    const totalSold = harvests.reduce((sum, harvest) => sum + harvest.sold, 0);
-    const totalStock = harvests.reduce((sum, harvest) => sum + harvest.inStock, 0);
+    const totalHarvested = harvests.reduce((sum, harvest) => sum + (harvest.quantity || 0), 0);
+    const totalValue = harvests.reduce((sum, harvest) => sum + (harvest.totalValue || 0), 0);
+    const totalSold = harvests.reduce((sum, harvest) => sum + (harvest.sold || 0), 0);
+    const totalStock = harvests.reduce((sum, harvest) => sum + (harvest.inStock || 0), 0);
     
     return { totalHarvested, totalValue, totalSold, totalStock };
   };
@@ -178,22 +166,22 @@ const Harvests = () => {
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
                     <p className="text-gray-600">Quantité récoltée</p>
-                    <p className="font-bold text-lg">{harvest.quantity.toLocaleString()} kg</p>
+                    <p className="font-bold text-lg">{(harvest.quantity || 0).toLocaleString()} kg</p>
                   </div>
                   <div>
                     <p className="text-gray-600">Valeur totale</p>
-                    <p className="font-bold text-lg text-green-600">{harvest.totalValue.toLocaleString()} GNF</p>
+                    <p className="font-bold text-lg text-green-600">{(harvest.totalValue || 0).toLocaleString()} GNF</p>
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
                     <p className="text-gray-600">Vendu</p>
-                    <p className="font-medium text-blue-600">{harvest.sold.toLocaleString()} kg</p>
+                    <p className="font-medium text-blue-600">{(harvest.sold || 0).toLocaleString()} kg</p>
                   </div>
                   <div>
                     <p className="text-gray-600">En stock</p>
-                    <p className="font-medium text-amber-600">{harvest.inStock.toLocaleString()} kg</p>
+                    <p className="font-medium text-amber-600">{(harvest.inStock || 0).toLocaleString()} kg</p>
                   </div>
                 </div>
 
@@ -208,7 +196,7 @@ const Harvests = () => {
                     size="sm" 
                     className="flex-1 border-green-300 text-green-700 hover:bg-green-50"
                     onClick={() => handleSell(harvest)}
-                    disabled={harvest.inStock === 0}
+                    disabled={(harvest.inStock || 0) === 0}
                   >
                     <ShoppingCart className="h-4 w-4 mr-1" />
                     Vendre

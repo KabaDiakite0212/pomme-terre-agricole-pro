@@ -1,7 +1,7 @@
 
-import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ApiService } from '@/services/api';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'react-toastify';
 
 export interface FieldAction {
   type: 'Irrigation' | 'Traitement' | 'Fertilisation' | 'Entretien';
@@ -12,32 +12,32 @@ export interface FieldAction {
 }
 
 export const useFieldActions = () => {
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const executeAction = async (fieldId: string, action: FieldAction) => {
-    setIsLoading(true);
-    try {
-      await ApiService.createFieldAction(fieldId, action);
-      toast({
-        title: "Action enregistrée",
-        description: `${action.type} programmée avec succès`,
+  const executeActionMutation = useMutation({
+    mutationFn: async ({ fieldId, action }: { fieldId: string; action: FieldAction }) => {
+      return await ApiService.createFieldAction(fieldId, action);
+    },
+    onSuccess: (_, { action }) => {
+      queryClient.invalidateQueries({ queryKey: ['fields'] });
+      
+      toast.success(`${action.type} programmée avec succès`, {
+        position: "top-right",
+        autoClose: 3000,
       });
-      return true;
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible d'enregistrer l'action",
-        variant: "destructive",
+    },
+    onError: (error) => {
+      console.error('Erreur lors de l\'enregistrement de l\'action:', error);
+      toast.error('Impossible d\'enregistrer l\'action', {
+        position: "top-right",
+        autoClose: 3000,
       });
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+  });
 
   return {
-    executeAction,
-    isLoading
+    executeAction: (fieldId: string, action: FieldAction) => 
+      executeActionMutation.mutateAsync({ fieldId, action }),
+    isLoading: executeActionMutation.isPending,
   };
 };

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -11,7 +10,7 @@ interface SellHarvestModalProps {
   isOpen: boolean;
   onClose: () => void;
   harvest: any;
-  onSell: (saleData: any) => void;
+  onSell: () => void;
 }
 
 const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModalProps) => {
@@ -40,9 +39,9 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
       product: formData.product
     };
 
-    const success = await createSale(saleData);
-    if (success) {
-      onSell(saleData);
+    try {
+      await createSale(saleData);
+      onSell();
       setFormData({
         clientName: '',
         quantity: '',
@@ -52,6 +51,8 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
         product: ''
       });
       onClose();
+    } catch (error) {
+      // L'erreur est déjà gérée par le hook avec react-toastify
     }
   };
 
