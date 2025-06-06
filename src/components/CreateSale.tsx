@@ -65,9 +65,9 @@ const CreateSale = ({ onBack, onSave }: CreateSaleProps) => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Restaurant Le Jardin">Restaurant Le Jardin</SelectItem>
-                    <SelectItem value="Supermarché Delhaize">Supermarché Delhaize</SelectItem>
+                    <SelectItem value="Supermarché Central">Supermarché Central</SelectItem>
                     <SelectItem value="Coopérative Locale">Coopérative Locale</SelectItem>
-                    <SelectItem value="Ferme Biologique Nord">Ferme Biologique Nord</SelectItem>
+                    <SelectItem value="Marché Madina">Marché Madina</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -78,10 +78,9 @@ const CreateSale = ({ onBack, onSave }: CreateSaleProps) => {
                     <SelectValue placeholder="Sélectionnez le produit" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Pommes de terre Charlotte">Pommes de terre Charlotte</SelectItem>
-                    <SelectItem value="Pommes de terre Bintje">Pommes de terre Bintje</SelectItem>
-                    <SelectItem value="Pommes de terre Désirée">Pommes de terre Désirée</SelectItem>
-                    <SelectItem value="Pommes de terre Spunta">Pommes de terre Spunta</SelectItem>
+                    <SelectItem value="Petit calibre (25-35 mm)">Petit calibre (25-35 mm)</SelectItem>
+                    <SelectItem value="Calibre moyen (35-45 mm)">Calibre moyen (35-45 mm)</SelectItem>
+                    <SelectItem value="Gros calibre (45-55 mm)">Gros calibre (45-55 mm)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

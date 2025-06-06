@@ -19,7 +19,8 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
     quantity: '',
     unitPrice: harvest?.unitPrice || '',
     paymentMethod: '',
-    saleDate: new Date().toISOString().split('T')[0]
+    saleDate: new Date().toISOString().split('T')[0],
+    product: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -32,7 +33,7 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
       totalAmount: parseInt(formData.quantity) * parseFloat(formData.unitPrice),
       paymentMethod: formData.paymentMethod,
       saleDate: formData.saleDate,
-      product: harvest.variety
+      product: formData.product
     };
     onSell(saleData);
     onClose();
@@ -44,7 +45,7 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
         <DialogHeader>
           <DialogTitle>Vendre la récolte</DialogTitle>
           <DialogDescription>
-            Créer une vente pour {harvest?.variety} du {harvest?.fieldName}
+            Créer une vente pour la récolte du {harvest?.fieldName}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -59,6 +60,19 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
                 <SelectItem value="Supermarché Central">Supermarché Central</SelectItem>
                 <SelectItem value="Coopérative Locale">Coopérative Locale</SelectItem>
                 <SelectItem value="Marché Madina">Marché Madina</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="product">Type de produit</Label>
+            <Select onValueChange={(value) => setFormData({...formData, product: value})}>
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionnez le calibre" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Petit calibre (25-35 mm)">Petit calibre (25-35 mm)</SelectItem>
+                <SelectItem value="Calibre moyen (35-45 mm)">Calibre moyen (35-45 mm)</SelectItem>
+                <SelectItem value="Gros calibre (45-55 mm)">Gros calibre (45-55 mm)</SelectItem>
               </SelectContent>
             </Select>
           </div>
