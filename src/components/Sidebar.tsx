@@ -12,7 +12,8 @@ import {
   Package,
   User,
   Wrench,
-  Calculator
+  Calculator,
+  Settings
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -23,13 +24,14 @@ interface SidebarProps {
 const navigation = [
   { name: 'Tableau de bord', href: '/', icon: BarChart3 },
   { name: 'Surfaces agricoles', href: '/surfaces', icon: Folder },
-  { name: 'Champs de pommes de terre', href: '/fields', icon: Calendar },
+  { name: 'Champs', href: '/fields', icon: Calendar },
   { name: 'Récoltes & Stock', href: '/harvests', icon: Package },
   { name: 'Intrants & Stocks', href: '/inputs', icon: Database },
   { name: 'Équipements & Matériels', href: '/equipment', icon: Wrench },
   { name: 'Prévisions & Investissements', href: '/investments', icon: Calculator },
   { name: 'Clients', href: '/clients', icon: Users },
   { name: 'Ventes', href: '/sales', icon: Calendar },
+  { name: 'Paramètres', href: '/settings', icon: Settings },
   { name: 'Profil', href: '/profile', icon: User },
 ];
 

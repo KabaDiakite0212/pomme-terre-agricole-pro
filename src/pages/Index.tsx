@@ -11,6 +11,7 @@ import Harvests from '@/components/Harvests';
 import Equipment from '@/components/Equipment';
 import Profile from '@/components/Profile';
 import Investments from '@/components/Investments';
+import Settings from '@/components/Settings';
 
 const Index = () => {
   return (
@@ -26,6 +27,7 @@ const Index = () => {
         <Route path="/sales" element={<Sales />} />
         <Route path="/investments" element={<Investments />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </Layout>
   );
