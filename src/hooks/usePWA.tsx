@@ -1,6 +1,13 @@
 
 import { useState, useEffect } from 'react';
 
+// Déclaration du type manquant pour navigator.standalone
+declare global {
+  interface Navigator {
+    standalone?: boolean;
+  }
+}
+
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
