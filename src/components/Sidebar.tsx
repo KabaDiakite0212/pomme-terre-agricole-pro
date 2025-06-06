@@ -49,23 +49,23 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
       {/* Sidebar */}
       <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 lg:flex lg:flex-col lg:w-64",
+        "fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:flex lg:flex-col",
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 flex-shrink-0">
+        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center">
             <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">🥔</span>
             </div>
-            <span className="ml-2 text-lg font-semibold text-gray-900">Demal</span>
+            <span className="ml-3 text-xl font-semibold text-gray-900">Demal</span>
           </div>
           <Button variant="ghost" size="sm" className="lg:hidden" onClick={onClose}>
             <X className="h-5 w-5" />
           </Button>
         </div>
 
-        <nav className="flex-1 mt-4 px-4 overflow-y-auto">
-          <ul className="space-y-1">
+        <nav className="flex-1 mt-6 px-6 overflow-y-auto">
+          <ul className="space-y-2">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
               return (
@@ -73,15 +73,15 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                   <Link
                     to={item.href}
                     className={cn(
-                      "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+                      "flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200",
                       isActive
-                        ? "bg-green-100 text-green-800 border-l-4 border-green-600"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        ? "bg-green-100 text-green-800 border-l-4 border-green-600 shadow-sm"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                     )}
                     onClick={() => onClose()}
                   >
                     <item.icon className={cn(
-                      "mr-3 h-5 w-5 flex-shrink-0",
+                      "mr-4 h-5 w-5 flex-shrink-0",
                       isActive ? "text-green-600" : "text-gray-400"
                     )} />
                     <span className="truncate">{item.name}</span>
@@ -91,6 +91,12 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             })}
           </ul>
         </nav>
+
+        <div className="p-6 border-t border-gray-200">
+          <div className="text-xs text-gray-500 text-center">
+            Version 1.0.0
+          </div>
+        </div>
       </div>
     </>
   );

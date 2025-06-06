@@ -8,7 +8,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sprout, Droplets, Bug, Calendar, AlertTriangle } from 'lucide-react';
-import { useFieldActions } from '@/hooks/useFieldActions';
 
 interface FieldActionsModalProps {
   isOpen: boolean;
@@ -17,7 +16,6 @@ interface FieldActionsModalProps {
 }
 
 const FieldActionsModal = ({ isOpen, onClose, field }: FieldActionsModalProps) => {
-  const { executeAction, isLoading } = useFieldActions();
   const [actionData, setActionData] = useState({
     type: '',
     date: new Date().toISOString().split('T')[0],
@@ -25,20 +23,26 @@ const FieldActionsModal = ({ isOpen, onClose, field }: FieldActionsModalProps) =
     product: '',
     notes: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmitAction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!field || !actionData.type) return;
 
-    const success = await executeAction(field.id, {
-      type: actionData.type as any,
+    setIsLoading(true);
+    
+    // Simuler l'action
+    console.log('Action planifiée:', {
+      fieldId: field.id,
+      type: actionData.type,
       date: actionData.date,
       quantity: actionData.quantity,
       product: actionData.product,
       notes: actionData.notes
     });
 
-    if (success) {
+    setTimeout(() => {
+      setIsLoading(false);
       setActionData({
         type: '',
         date: new Date().toISOString().split('T')[0],
@@ -47,7 +51,7 @@ const FieldActionsModal = ({ isOpen, onClose, field }: FieldActionsModalProps) =
         notes: ''
       });
       onClose();
-    }
+    }, 1000);
   };
 
   if (!field) return null;
