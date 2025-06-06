@@ -1,10 +1,10 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useHarvestSales } from '@/hooks/useHarvestSales';
 
 interface SellHarvestModalProps {
   isOpen: boolean;
@@ -14,7 +14,6 @@ interface SellHarvestModalProps {
 }
 
 const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModalProps) => {
-  const { createSale, isLoading } = useHarvestSales();
   const [formData, setFormData] = useState({
     clientName: '',
     quantity: '',
@@ -28,7 +27,8 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
     e.preventDefault();
     if (!harvest) return;
 
-    const saleData = {
+    // Simuler la création de vente
+    console.log('Vente créée:', {
       harvestId: harvest.id,
       clientName: formData.clientName,
       quantity: parseInt(formData.quantity),
@@ -37,23 +37,18 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
       paymentMethod: formData.paymentMethod,
       saleDate: formData.saleDate,
       product: formData.product
-    };
+    });
 
-    try {
-      await createSale(saleData);
-      onSell();
-      setFormData({
-        clientName: '',
-        quantity: '',
-        unitPrice: harvest?.unitPrice || '',
-        paymentMethod: '',
-        saleDate: new Date().toISOString().split('T')[0],
-        product: ''
-      });
-      onClose();
-    } catch (error) {
-      // L'erreur est déjà gérée par le hook avec react-toastify
-    }
+    onSell();
+    setFormData({
+      clientName: '',
+      quantity: '',
+      unitPrice: harvest?.unitPrice || '',
+      paymentMethod: '',
+      saleDate: new Date().toISOString().split('T')[0],
+      product: ''
+    });
+    onClose();
   };
 
   return (
@@ -142,8 +137,8 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
             <Button type="button" variant="outline" onClick={onClose}>
               Annuler
             </Button>
-            <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={isLoading}>
-              {isLoading ? 'En cours...' : 'Créer la vente'}
+            <Button type="submit" className="bg-green-600 hover:bg-green-700">
+              Créer la vente
             </Button>
           </div>
         </form>

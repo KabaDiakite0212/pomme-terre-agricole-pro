@@ -49,10 +49,10 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
       {/* Sidebar */}
       <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 lg:flex lg:flex-col",
+        "fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 lg:flex lg:flex-col lg:w-64",
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center">
             <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">🥔</span>
@@ -64,8 +64,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           </Button>
         </div>
 
-        <nav className="flex-1 mt-8 px-4 overflow-y-auto">
-          <ul className="space-y-2">
+        <nav className="flex-1 mt-4 px-4 overflow-y-auto">
+          <ul className="space-y-1">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
               return (
@@ -81,10 +81,10 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                     onClick={() => onClose()}
                   >
                     <item.icon className={cn(
-                      "mr-3 h-5 w-5",
+                      "mr-3 h-5 w-5 flex-shrink-0",
                       isActive ? "text-green-600" : "text-gray-400"
                     )} />
-                    {item.name}
+                    <span className="truncate">{item.name}</span>
                   </Link>
                 </li>
               );

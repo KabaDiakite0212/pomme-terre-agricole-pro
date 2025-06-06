@@ -1,21 +1,49 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Package, ShoppingCart, Edit, Loader2 } from 'lucide-react';
-import { useHarvests } from '@/hooks/useHarvests';
+import { Plus, Package, ShoppingCart, Edit } from 'lucide-react';
 import CreateHarvest from './CreateHarvest';
 import SellHarvestModal from './modals/SellHarvestModal';
 import ModifyHarvestModal from './modals/ModifyHarvestModal';
 
 const Harvests = () => {
-  const { data: harvests = [], isLoading, error } = useHarvests();
+  const [harvests, setHarvests] = useState([
+    {
+      id: 1,
+      fieldName: 'Champ A1',
+      variety: 'Petit calibre (25-35mm)',
+      harvestDate: '2024-01-15',
+      quantity: 2800,
+      quality: 'Excellente',
+      storageLocation: 'Entrepôt Principal',
+      unitPrice: 25000,
+      totalValue: 70000000,
+      sold: 800,
+      inStock: 2000
+    },
+    {
+      id: 2,
+      fieldName: 'Champ B2',
+      variety: 'Calibre moyen',
+      harvestDate: '2024-01-20',
+      quantity: 3200,
+      quality: 'Bonne',
+      storageLocation: 'Entrepôt Nord',
+      unitPrice: 22000,
+      totalValue: 70400000,
+      sold: 1200,
+      inStock: 2000
+    }
+  ]);
+  
   const [showCreate, setShowCreate] = useState(false);
   const [sellModal, setSellModal] = useState({ isOpen: false, harvest: null });
   const [modifyModal, setModifyModal] = useState({ isOpen: false, harvest: null });
 
-  const handleSaveHarvest = () => {
-    // React Query will automatically refetch when we invalidate the query
+  const handleSaveHarvest = (newHarvest: any) => {
+    setHarvests([...harvests, newHarvest]);
     setShowCreate(false);
   };
 
@@ -24,7 +52,6 @@ const Harvests = () => {
   };
 
   const handleSellConfirm = () => {
-    // React Query will handle the data refresh automatically
     setSellModal({ isOpen: false, harvest: null });
   };
 
@@ -33,7 +60,6 @@ const Harvests = () => {
   };
 
   const handleModifyConfirm = () => {
-    // React Query will handle the data refresh automatically
     setModifyModal({ isOpen: false, harvest: null });
   };
 
@@ -43,30 +69,6 @@ const Harvests = () => {
         onBack={() => setShowCreate(false)} 
         onSave={handleSaveHarvest}
       />
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
-        <span className="ml-2 text-gray-600">Chargement des récoltes...</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-red-600">Erreur lors du chargement des récoltes</p>
-        <Button 
-          onClick={() => window.location.reload()} 
-          className="mt-4"
-          variant="outline"
-        >
-          Réessayer
-        </Button>
-      </div>
     );
   }
 
@@ -92,7 +94,7 @@ const Harvests = () => {
   const stats = getTotalStats();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
