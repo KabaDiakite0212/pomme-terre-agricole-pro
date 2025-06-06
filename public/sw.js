@@ -2,8 +2,7 @@
 const CACHE_NAME = 'agri-pro-v1';
 const urlsToCache = [
   '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
+  '/index.html',
   '/manifest.json',
   '/icon-192x192.png',
   '/icon-512x512.png'
@@ -14,10 +13,12 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Cache ouvert');
+        console.log('Cache ouvert et initialisé');
         return cache.addAll(urlsToCache);
       })
   );
+  // Force le service worker à devenir actif immédiatement
+  self.skipWaiting();
 });
 
 // Activation du service worker
@@ -30,10 +31,13 @@ self.addEventListener('activate', (event) => {
             console.log('Suppression du cache obsolète:', cacheName);
             return caches.delete(cacheName);
           }
+          return null;
         })
       );
     })
   );
+  // Permet au service worker de contrôler toutes les pages immédiatement
+  self.clients.claim();
 });
 
 // Interception des requêtes réseau
@@ -46,9 +50,12 @@ self.addEventListener('fetch', (event) => {
           return response;
         }
         
+        // Clone la requête car elle ne peut être utilisée qu'une fois
+        const fetchRequest = event.request.clone();
+        
         // Sinon, fait la requête réseau
-        return fetch(event.request).then(
-          (response) => {
+        return fetch(fetchRequest)
+          .then((response) => {
             // Vérifie si c'est une réponse valide
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
@@ -57,25 +64,30 @@ self.addEventListener('fetch', (event) => {
             // Clone la réponse
             const responseToCache = response.clone();
 
+            // Mise en cache de la nouvelle ressource
             caches.open(CACHE_NAME)
               .then((cache) => {
                 cache.put(event.request, responseToCache);
               });
 
             return response;
-          }
-        );
-      })
-      .catch(() => {
-        // Retourne une page hors-ligne basique si tout échoue
-        if (event.request.destination === 'document') {
-          return caches.match('/');
-        }
+          })
+          .catch(() => {
+            // Retourne une page hors-ligne ou un contenu spécifique
+            if (event.request.mode === 'navigate') {
+              return caches.match('/');
+            }
+            
+            // Pour les ressources d'images manquantes, on peut renvoyer une image par défaut
+            if (event.request.destination === 'image') {
+              return caches.match('/placeholder.svg');
+            }
+          });
       })
   );
 });
 
-// Gestion des notifications push (optionnel)
+// Gestion des notifications push
 self.addEventListener('push', (event) => {
   const options = {
     body: event.data ? event.data.text() : 'Nouvelle notification de AgriPro',

@@ -1,6 +1,11 @@
 
 import { useState, useEffect } from 'react';
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
 interface PWAState {
   isInstalled: boolean;
   isOnline: boolean;
@@ -12,17 +17,26 @@ export const usePWA = (): PWAState => {
   const [isInstalled, setIsInstalled] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [canInstall, setCanInstall] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     // Vérifier si l'app est installée
     const checkIfInstalled = () => {
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
       const isFullscreen = window.matchMedia('(display-mode: fullscreen)').matches;
-      setIsInstalled(isStandalone || isFullscreen);
+      const isMinimalUi = window.matchMedia('(display-mode: minimal-ui)').matches;
+      
+      // En plus de ces vérifications, on peut aussi vérifier si l'app est installée via d'autres moyens
+      const isFromHomeScreen = window.navigator.standalone === true;
+      
+      setIsInstalled(isStandalone || isFullscreen || isMinimalUi || isFromHomeScreen);
     };
 
     checkIfInstalled();
+
+    // Observer les changements de mode d'affichage
+    const mediaQuery = window.matchMedia('(display-mode: standalone), (display-mode: fullscreen), (display-mode: minimal-ui)');
+    mediaQuery.addEventListener('change', checkIfInstalled);
 
     // Écouter les changements de connectivité
     const handleOnline = () => setIsOnline(true);
@@ -34,7 +48,7 @@ export const usePWA = (): PWAState => {
     // Écouter l'événement beforeinstallprompt
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e);
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
       setCanInstall(true);
     };
 
@@ -45,6 +59,7 @@ export const usePWA = (): PWAState => {
       setIsInstalled(true);
       setCanInstall(false);
       setDeferredPrompt(null);
+      console.log('Application installée avec succès');
     };
 
     window.addEventListener('appinstalled', handleAppInstalled);
@@ -54,20 +69,27 @@ export const usePWA = (): PWAState => {
       window.removeEventListener('offline', handleOffline);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
+      mediaQuery.removeEventListener('change', checkIfInstalled);
     };
   }, []);
 
   const showInstallPrompt = async () => {
     if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      
-      if (outcome === 'accepted') {
-        console.log('Installation acceptée');
+      try {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        
+        if (outcome === 'accepted') {
+          console.log('Installation acceptée');
+        } else {
+          console.log('Installation refusée');
+        }
+        
+        setDeferredPrompt(null);
+        setCanInstall(false);
+      } catch (error) {
+        console.error('Erreur lors de la demande d\'installation:', error);
       }
-      
-      setDeferredPrompt(null);
-      setCanInstall(false);
     }
   };
 
@@ -78,3 +100,5 @@ export const usePWA = (): PWAState => {
     showInstallPrompt
   };
 };
+
+export default usePWA;

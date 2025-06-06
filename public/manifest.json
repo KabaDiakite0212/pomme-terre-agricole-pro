@@ -23,6 +23,20 @@
       "purpose": "maskable any"
     }
   ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Tableau de bord",
+      "url": "/"
+    },
+    {
+      "name": "Champs",
+      "short_name": "Champs",
+      "description": "Gérer mes champs",
+      "url": "/fields"
+    }
+  ],
   "categories": ["business", "productivity", "agriculture"],
   "lang": "fr",
   "dir": "ltr"

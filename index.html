@@ -3,7 +3,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
     <title>Pomme Terre Agricole Pro</title>
     <meta name="description" content="Application de gestion agricole professionnelle pour la culture de pommes de terre" />
     <meta name="author" content="AgriPro Team" />
@@ -11,17 +11,24 @@
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#16a34a" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="AgriPro" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="AgriPro" />
     
     <!-- Manifest -->
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
     
     <!-- Icons -->
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png" />
     <link rel="apple-touch-icon" href="/icon-192x192.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/icon-192x192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icon-192x192.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="/icon-192x192.png" />
+    
+    <!-- Apple PWA Splash Screens -->
+    <link rel="apple-touch-startup-image" href="/icon-512x512.png" />
     
     <!-- Open Graph -->
     <meta property="og:title" content="Pomme Terre Agricole Pro" />
@@ -42,33 +49,37 @@
     
     <!-- PWA Installation Script -->
     <script>
-      // Enregistrement du service worker
+      // Enregistrement du service worker avec plus de robustesse
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-              console.log('SW enregistré avec succès: ', registration.scope);
-            })
-            .catch((registrationError) => {
-              console.log('Échec de l\'enregistrement du SW: ', registrationError);
+        window.addEventListener('load', async () => {
+          try {
+            const registration = await navigator.serviceWorker.register('/sw.js', {
+              scope: '/'
             });
+            console.log('SW enregistré avec succès: ', registration.scope);
+            
+            // Vérifie les mises à jour du service worker
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              console.log('Mise à jour du service worker:', newWorker.state);
+              newWorker.addEventListener('statechange', () => {
+                console.log('État du service worker:', newWorker.state);
+              });
+            });
+          } catch (error) {
+            console.error('Échec de l\'enregistrement du SW: ', error);
+          }
+        });
+
+        // Gestion de la mise à jour du service worker
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+          }
         });
       }
-      
-      // Gestion de l'installation de la PWA
-      let deferredPrompt;
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        
-        // Vous pouvez afficher un bouton d'installation personnalisé ici
-        console.log('PWA peut être installée');
-      });
-      
-      // Gestion après installation
-      window.addEventListener('appinstalled', (evt) => {
-        console.log('PWA installée avec succès');
-      });
     </script>
   </body>
 </html>
