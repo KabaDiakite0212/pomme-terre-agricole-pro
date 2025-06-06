@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import PWAInstallPrompt from './PWAInstallPrompt';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -19,6 +20,7 @@ const Layout = ({ children }: LayoutProps) => {
           {children}
         </main>
       </div>
+      <PWAInstallPrompt />
     </div>
   );
 };

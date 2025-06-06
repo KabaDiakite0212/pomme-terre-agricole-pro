@@ -1,24 +1,74 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pomme-terre-agricole-pro</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
-
-    <meta property="og:title" content="pomme-terre-agricole-pro" />
-    <meta property="og:description" content="Lovable Generated Project" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Pomme Terre Agricole Pro</title>
+    <meta name="description" content="Application de gestion agricole professionnelle pour la culture de pommes de terre" />
+    <meta name="author" content="AgriPro Team" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#16a34a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="AgriPro" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png" />
+    <link rel="apple-touch-icon" href="/icon-192x192.png" />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Pomme Terre Agricole Pro" />
+    <meta property="og:description" content="Application de gestion agricole professionnelle" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-
+    <meta property="og:image" content="/icon-512x512.png" />
+    
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:title" content="Pomme Terre Agricole Pro" />
+    <meta name="twitter:description" content="Application de gestion agricole professionnelle" />
+    <meta name="twitter:image" content="/icon-512x512.png" />
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- PWA Installation Script -->
+    <script>
+      // Enregistrement du service worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW enregistré avec succès: ', registration.scope);
+            })
+            .catch((registrationError) => {
+              console.log('Échec de l\'enregistrement du SW: ', registrationError);
+            });
+        });
+      }
+      
+      // Gestion de l'installation de la PWA
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Vous pouvez afficher un bouton d'installation personnalisé ici
+        console.log('PWA peut être installée');
+      });
+      
+      // Gestion après installation
+      window.addEventListener('appinstalled', (evt) => {
+        console.log('PWA installée avec succès');
+      });
+    </script>
   </body>
 </html>

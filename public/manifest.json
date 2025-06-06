@@ -1,0 +1,29 @@
+
+{
+  "name": "Pomme Terre Agricole Pro",
+  "short_name": "AgriPro",
+  "description": "Application de gestion agricole professionnelle pour la culture de pommes de terre",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["business", "productivity", "agriculture"],
+  "lang": "fr",
+  "dir": "ltr"
+}
