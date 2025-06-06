@@ -10,6 +10,7 @@ import Sales from '@/components/Sales';
 import Harvests from '@/components/Harvests';
 import Equipment from '@/components/Equipment';
 import Profile from '@/components/Profile';
+import Investments from '@/components/Investments';
 
 const Index = () => {
   return (
@@ -23,6 +24,7 @@ const Index = () => {
         <Route path="/equipment" element={<Equipment />} />
         <Route path="/clients" element={<Clients />} />
         <Route path="/sales" element={<Sales />} />
+        <Route path="/investments" element={<Investments />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
     </Layout>
