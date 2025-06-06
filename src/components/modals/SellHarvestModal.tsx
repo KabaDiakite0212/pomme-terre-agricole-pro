@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useHarvestSales } from '@/hooks/useHarvestSales';
 
 interface SellHarvestModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface SellHarvestModalProps {
 }
 
 const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModalProps) => {
+  const { createSale, isLoading } = useHarvestSales();
   const [formData, setFormData] = useState({
     clientName: '',
     quantity: '',
@@ -23,8 +25,10 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
     product: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!harvest) return;
+
     const saleData = {
       harvestId: harvest.id,
       clientName: formData.clientName,
@@ -35,8 +39,20 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
       saleDate: formData.saleDate,
       product: formData.product
     };
-    onSell(saleData);
-    onClose();
+
+    const success = await createSale(saleData);
+    if (success) {
+      onSell(saleData);
+      setFormData({
+        clientName: '',
+        quantity: '',
+        unitPrice: harvest?.unitPrice || '',
+        paymentMethod: '',
+        saleDate: new Date().toISOString().split('T')[0],
+        product: ''
+      });
+      onClose();
+    }
   };
 
   return (
@@ -51,7 +67,7 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="clientName">Client</Label>
-            <Select onValueChange={(value) => setFormData({...formData, clientName: value})}>
+            <Select onValueChange={(value) => setFormData({...formData, clientName: value})} required>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le client" />
               </SelectTrigger>
@@ -65,7 +81,7 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
           </div>
           <div>
             <Label htmlFor="product">Type de produit</Label>
-            <Select onValueChange={(value) => setFormData({...formData, product: value})}>
+            <Select onValueChange={(value) => setFormData({...formData, product: value})} required>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le calibre" />
               </SelectTrigger>
@@ -109,7 +125,7 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
           </div>
           <div>
             <Label htmlFor="paymentMethod">Mode de paiement</Label>
-            <Select onValueChange={(value) => setFormData({...formData, paymentMethod: value})}>
+            <Select onValueChange={(value) => setFormData({...formData, paymentMethod: value})} required>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le mode" />
               </SelectTrigger>
@@ -125,8 +141,8 @@ const SellHarvestModal = ({ isOpen, onClose, harvest, onSell }: SellHarvestModal
             <Button type="button" variant="outline" onClick={onClose}>
               Annuler
             </Button>
-            <Button type="submit" className="bg-green-600 hover:bg-green-700">
-              Créer la vente
+            <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={isLoading}>
+              {isLoading ? 'En cours...' : 'Créer la vente'}
             </Button>
           </div>
         </form>

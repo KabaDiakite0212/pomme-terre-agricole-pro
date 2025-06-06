@@ -55,4 +55,18 @@ export class InputsController {
   remove(@Param('id') id: string) {
     return this.inputsService.remove(id);
   }
+
+  @Post(':id/use')
+  @ApiOperation({ summary: 'Utiliser un intrant' })
+  @ApiResponse({ status: 201, description: 'Utilisation enregistrée' })
+  useInput(@Param('id') id: string, @Body() usage: any) {
+    return this.inputsService.useInput(id, usage);
+  }
+
+  @Post(':id/buy')
+  @ApiOperation({ summary: 'Acheter un intrant' })
+  @ApiResponse({ status: 201, description: 'Achat enregistré' })
+  buyInput(@Param('id') id: string, @Body() purchase: any) {
+    return this.inputsService.buyInput(id, purchase);
+  }
 }

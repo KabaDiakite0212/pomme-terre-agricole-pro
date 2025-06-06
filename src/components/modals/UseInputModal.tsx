@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useInputManagement } from '@/hooks/useInputManagement';
 
 interface UseInputModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface UseInputModalProps {
 }
 
 const UseInputModal = ({ isOpen, onClose, input, onUse }: UseInputModalProps) => {
+  const { useInput, isLoading } = useInputManagement();
   const [formData, setFormData] = useState({
     field: '',
     quantity: '',
@@ -21,8 +23,10 @@ const UseInputModal = ({ isOpen, onClose, input, onUse }: UseInputModalProps) =>
     notes: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!input) return;
+
     const useData = {
       inputId: input.id,
       field: formData.field,
@@ -30,8 +34,18 @@ const UseInputModal = ({ isOpen, onClose, input, onUse }: UseInputModalProps) =>
       usageDate: formData.usageDate,
       notes: formData.notes
     };
-    onUse(useData);
-    onClose();
+
+    const success = await useInput(useData);
+    if (success) {
+      onUse(useData);
+      setFormData({
+        field: '',
+        quantity: '',
+        usageDate: new Date().toISOString().split('T')[0],
+        notes: ''
+      });
+      onClose();
+    }
   };
 
   return (
@@ -46,7 +60,7 @@ const UseInputModal = ({ isOpen, onClose, input, onUse }: UseInputModalProps) =>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="field">Champ d'application</Label>
-            <Select onValueChange={(value) => setFormData({...formData, field: value})}>
+            <Select onValueChange={(value) => setFormData({...formData, field: value})} required>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le champ" />
               </SelectTrigger>
@@ -93,8 +107,8 @@ const UseInputModal = ({ isOpen, onClose, input, onUse }: UseInputModalProps) =>
             <Button type="button" variant="outline" onClick={onClose}>
               Annuler
             </Button>
-            <Button type="submit" className="bg-green-600 hover:bg-green-700">
-              Confirmer l'utilisation
+            <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={isLoading}>
+              {isLoading ? 'En cours...' : 'Confirmer l\'utilisation'}
             </Button>
           </div>
         </form>

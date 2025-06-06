@@ -7,7 +7,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FieldsService } from './fields.service';
@@ -29,10 +28,7 @@ export class FieldsController {
   @Get()
   @ApiOperation({ summary: 'Récupérer tous les champs' })
   @ApiResponse({ status: 200, description: 'Liste des champs' })
-  findAll(@Query('surfaceId') surfaceId?: string) {
-    if (surfaceId) {
-      return this.fieldsService.findBySurface(surfaceId);
-    }
+  findAll() {
     return this.fieldsService.findAll();
   }
 
@@ -58,5 +54,12 @@ export class FieldsController {
   @ApiResponse({ status: 404, description: 'Champ non trouvé' })
   remove(@Param('id') id: string) {
     return this.fieldsService.remove(id);
+  }
+
+  @Post(':id/actions')
+  @ApiOperation({ summary: 'Ajouter une action à un champ' })
+  @ApiResponse({ status: 201, description: 'Action ajoutée avec succès' })
+  addAction(@Param('id') id: string, @Body() action: any) {
+    return this.fieldsService.addAction(id, action);
   }
 }

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useInputManagement } from '@/hooks/useInputManagement';
 
 interface BuyInputModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface BuyInputModalProps {
 }
 
 const BuyInputModal = ({ isOpen, onClose, input, onBuy }: BuyInputModalProps) => {
+  const { buyInput, isLoading } = useInputManagement();
   const [formData, setFormData] = useState({
     supplier: '',
     quantity: '',
@@ -22,8 +24,10 @@ const BuyInputModal = ({ isOpen, onClose, input, onBuy }: BuyInputModalProps) =>
     purchaseDate: new Date().toISOString().split('T')[0]
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!input) return;
+
     const buyData = {
       inputId: input.id,
       supplier: formData.supplier,
@@ -33,8 +37,19 @@ const BuyInputModal = ({ isOpen, onClose, input, onBuy }: BuyInputModalProps) =>
       paymentMethod: formData.paymentMethod,
       purchaseDate: formData.purchaseDate
     };
-    onBuy(buyData);
-    onClose();
+
+    const success = await buyInput(buyData);
+    if (success) {
+      onBuy(buyData);
+      setFormData({
+        supplier: '',
+        quantity: '',
+        unitPrice: '',
+        paymentMethod: '',
+        purchaseDate: new Date().toISOString().split('T')[0]
+      });
+      onClose();
+    }
   };
 
   return (
@@ -49,7 +64,7 @@ const BuyInputModal = ({ isOpen, onClose, input, onBuy }: BuyInputModalProps) =>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="supplier">Fournisseur</Label>
-            <Select onValueChange={(value) => setFormData({...formData, supplier: value})}>
+            <Select onValueChange={(value) => setFormData({...formData, supplier: value})} required>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le fournisseur" />
               </SelectTrigger>
@@ -93,7 +108,7 @@ const BuyInputModal = ({ isOpen, onClose, input, onBuy }: BuyInputModalProps) =>
           </div>
           <div>
             <Label htmlFor="paymentMethod">Mode de paiement</Label>
-            <Select onValueChange={(value) => setFormData({...formData, paymentMethod: value})}>
+            <Select onValueChange={(value) => setFormData({...formData, paymentMethod: value})} required>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le mode" />
               </SelectTrigger>
@@ -119,8 +134,8 @@ const BuyInputModal = ({ isOpen, onClose, input, onBuy }: BuyInputModalProps) =>
             <Button type="button" variant="outline" onClick={onClose}>
               Annuler
             </Button>
-            <Button type="submit" className="bg-green-600 hover:bg-green-700">
-              Confirmer l'achat
+            <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={isLoading}>
+              {isLoading ? 'En cours...' : 'Confirmer l\'achat'}
             </Button>
           </div>
         </form>

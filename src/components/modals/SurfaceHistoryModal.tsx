@@ -2,6 +2,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from 'lucide-react';
+import { useSurfaceHistory } from '@/hooks/useSurfaceHistory';
 
 interface SurfaceHistoryModalProps {
   isOpen: boolean;
@@ -10,12 +11,7 @@ interface SurfaceHistoryModalProps {
 }
 
 const SurfaceHistoryModal = ({ isOpen, onClose, surface }: SurfaceHistoryModalProps) => {
-  const historyData = [
-    { date: '2024-05-01', action: 'Plantation', details: 'Plantation de pommes de terre calibre moyen', crop: 'Pommes de terre' },
-    { date: '2024-03-15', action: 'Préparation', details: 'Labour et fertilisation du sol', crop: null },
-    { date: '2024-01-20', action: 'Récolte', details: 'Récolte de légumes', crop: 'Légumes' },
-    { date: '2023-10-10', action: 'Plantation', details: 'Plantation de légumes de saison', crop: 'Légumes' }
-  ];
+  const { history } = useSurfaceHistory(surface?.id);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -27,7 +23,7 @@ const SurfaceHistoryModal = ({ isOpen, onClose, surface }: SurfaceHistoryModalPr
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 max-h-96 overflow-y-auto">
-          {historyData.map((entry, index) => (
+          {history.map((entry, index) => (
             <div key={index} className="border rounded-lg p-4 hover:bg-gray-50">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">

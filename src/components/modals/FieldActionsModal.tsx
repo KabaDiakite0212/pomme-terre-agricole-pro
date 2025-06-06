@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sprout, Droplets, Bug, Calendar, AlertTriangle } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useFieldActions } from '@/hooks/useFieldActions';
 
 interface FieldActionsModalProps {
   isOpen: boolean;
@@ -17,7 +17,7 @@ interface FieldActionsModalProps {
 }
 
 const FieldActionsModal = ({ isOpen, onClose, field }: FieldActionsModalProps) => {
-  const { toast } = useToast();
+  const { executeAction, isLoading } = useFieldActions();
   const [actionData, setActionData] = useState({
     type: '',
     date: new Date().toISOString().split('T')[0],
@@ -26,20 +26,28 @@ const FieldActionsModal = ({ isOpen, onClose, field }: FieldActionsModalProps) =
     notes: ''
   });
 
-  const handleSubmitAction = (e: React.FormEvent) => {
+  const handleSubmitAction = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Action enregistrée",
-      description: `${actionData.type} programmée pour le champ ${field?.name}`,
+    if (!field || !actionData.type) return;
+
+    const success = await executeAction(field.id, {
+      type: actionData.type as any,
+      date: actionData.date,
+      quantity: actionData.quantity,
+      product: actionData.product,
+      notes: actionData.notes
     });
-    setActionData({
-      type: '',
-      date: new Date().toISOString().split('T')[0],
-      quantity: '',
-      product: '',
-      notes: ''
-    });
-    onClose();
+
+    if (success) {
+      setActionData({
+        type: '',
+        date: new Date().toISOString().split('T')[0],
+        quantity: '',
+        product: '',
+        notes: ''
+      });
+      onClose();
+    }
   };
 
   if (!field) return null;
@@ -110,8 +118,8 @@ const FieldActionsModal = ({ isOpen, onClose, field }: FieldActionsModalProps) =
                     onChange={(e) => setActionData({...actionData, notes: e.target.value})}
                   />
                 </div>
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                  Programmer l'irrigation
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+                  {isLoading ? 'En cours...' : 'Programmer l\'irrigation'}
                 </Button>
               </form>
             </div>
@@ -162,8 +170,8 @@ const FieldActionsModal = ({ isOpen, onClose, field }: FieldActionsModalProps) =
                     onChange={(e) => setActionData({...actionData, notes: e.target.value})}
                   />
                 </div>
-                <Button type="submit" className="w-full bg-red-600 hover:bg-red-700">
-                  Programmer le traitement
+                <Button type="submit" className="w-full bg-red-600 hover:bg-red-700" disabled={isLoading}>
+                  {isLoading ? 'En cours...' : 'Programmer le traitement'}
                 </Button>
               </form>
             </div>
@@ -214,8 +222,8 @@ const FieldActionsModal = ({ isOpen, onClose, field }: FieldActionsModalProps) =
                     onChange={(e) => setActionData({...actionData, notes: e.target.value})}
                   />
                 </div>
-                <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
-                  Programmer la fertilisation
+                <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isLoading}>
+                  {isLoading ? 'En cours...' : 'Programmer la fertilisation'}
                 </Button>
               </form>
             </div>
@@ -258,8 +266,8 @@ const FieldActionsModal = ({ isOpen, onClose, field }: FieldActionsModalProps) =
                     onChange={(e) => setActionData({...actionData, notes: e.target.value})}
                   />
                 </div>
-                <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700">
-                  Programmer l'entretien
+                <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700" disabled={isLoading}>
+                  {isLoading ? 'En cours...' : 'Programmer l\'entretien'}
                 </Button>
               </form>
             </div>
@@ -269,7 +277,7 @@ const FieldActionsModal = ({ isOpen, onClose, field }: FieldActionsModalProps) =
         <div className="border-t pt-4">
           <div className="flex items-center space-x-2 text-sm text-gray-600">
             <AlertTriangle className="h-4 w-4" />
-            <p>Les actions programmées seront ajoutées au planning du champ</p>
+            <p>Les actions programmées seront enregistrées dans la base de données</p>
           </div>
         </div>
       </DialogContent>
