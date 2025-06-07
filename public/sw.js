@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'agri-pro-v1';
+const CACHE_NAME = 'agri-pro-v2';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -10,11 +10,15 @@ const urlsToCache = [
 
 // Installation du service worker
 self.addEventListener('install', (event) => {
+  console.log('Service Worker: Installation en cours...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Cache ouvert et initialisé');
+        console.log('Service Worker: Cache ouvert et initialisé');
         return cache.addAll(urlsToCache);
+      })
+      .catch((error) => {
+        console.error('Service Worker: Erreur lors de la mise en cache:', error);
       })
   );
   // Force le service worker à devenir actif immédiatement
@@ -23,12 +27,13 @@ self.addEventListener('install', (event) => {
 
 // Activation du service worker
 self.addEventListener('activate', (event) => {
+  console.log('Service Worker: Activation en cours...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('Suppression du cache obsolète:', cacheName);
+            console.log('Service Worker: Suppression du cache obsolète:', cacheName);
             return caches.delete(cacheName);
           }
           return null;
@@ -42,6 +47,11 @@ self.addEventListener('activate', (event) => {
 
 // Interception des requêtes réseau
 self.addEventListener('fetch', (event) => {
+  // Ignore les requêtes non-HTTP
+  if (!event.request.url.startsWith('http')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
@@ -76,11 +86,6 @@ self.addEventListener('fetch', (event) => {
             // Retourne une page hors-ligne ou un contenu spécifique
             if (event.request.mode === 'navigate') {
               return caches.match('/');
-            }
-            
-            // Pour les ressources d'images manquantes, on peut renvoyer une image par défaut
-            if (event.request.destination === 'image') {
-              return caches.match('/placeholder.svg');
             }
           });
       })
