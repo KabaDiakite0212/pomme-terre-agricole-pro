@@ -35,7 +35,7 @@ const CasesManagement = () => {
   };
 
   const handleDeleteCase = (id: string) => {
-    setCases(cases.filter(case => case.id !== id));
+    setCases(cases.filter(caseItem => caseItem.id !== id));
   };
 
   return (
