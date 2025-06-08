@@ -28,6 +28,7 @@ const navigation = [
   { name: 'Récoltes & Stock', href: '/harvests', icon: Package },
   { name: 'Intrants & Stocks', href: '/inputs', icon: Database },
   { name: 'Équipements & Matériels', href: '/equipment', icon: Wrench },
+  { name: 'Conservation Chambre Froide', href: '/conservation', icon: Package },
   { name: 'Prévisions & Investissements', href: '/investments', icon: Calculator },
   { name: 'Clients', href: '/clients', icon: Users },
   { name: 'Ventes', href: '/sales', icon: Calendar },
