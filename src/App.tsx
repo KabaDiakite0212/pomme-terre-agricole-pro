@@ -1,14 +1,14 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { QueryProvider } from './providers/QueryProvider';
-import Layout from './components/Layout';
+import { QueryProvider } from './common/providers/QueryProvider';
+import Layout from './common/components/Layout/Layout';
 import Dashboard from './components/Dashboard';
-import Surfaces from './components/Surfaces';
+import SurfacesPage from './modules/surfaces/components/SurfacesPage';
 import Fields from './components/Fields';
 import Inputs from './components/Inputs';
-import Clients from './components/Clients';
-import Sales from './components/Sales';
+import ClientsPage from './modules/clients/components/ClientsPage';
+import SalesPage from './modules/sales/components/SalesPage';
 import Harvests from './components/Harvests';
 import Equipment from './components/Equipment';
 import Profile from './components/Profile';
@@ -26,13 +26,13 @@ function App() {
           <Layout>
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/surfaces" element={<Surfaces />} />
+              <Route path="/surfaces" element={<SurfacesPage />} />
               <Route path="/fields" element={<Fields />} />
               <Route path="/harvests" element={<Harvests />} />
               <Route path="/inputs" element={<Inputs />} />
               <Route path="/equipment" element={<Equipment />} />
-              <Route path="/clients" element={<Clients />} />
-              <Route path="/sales" element={<Sales />} />
+              <Route path="/clients" element={<ClientsPage />} />
+              <Route path="/sales" element={<SalesPage />} />
               <Route path="/investments" element={<Investments />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/settings" element={<Settings />} />

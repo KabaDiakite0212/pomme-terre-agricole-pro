@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, X, Smartphone } from 'lucide-react';
-import { usePWA } from '@/hooks/usePWA';
+import { usePWA } from '@/common/hooks/usePWA';
 
 const PWAInstallPrompt = () => {
   const { isInstalled, isOnline, canInstall, showInstallPrompt } = usePWA();

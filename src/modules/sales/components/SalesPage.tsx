@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import { Plus, Calendar, Eye, Check } from 'lucide-react';
 import CreateSale from './CreateSale';
 import SaleDetailsModal from './modals/SaleDetailsModal';
 
-const Sales = () => {
+const SalesPage = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [detailsModal, setDetailsModal] = useState({ isOpen: false, sale: null });
   const [sales, setSales] = useState([
@@ -232,4 +233,4 @@ const Sales = () => {
   );
 };
 
-export default Sales;
+export default SalesPage;
