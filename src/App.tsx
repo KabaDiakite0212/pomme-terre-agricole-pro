@@ -11,6 +11,7 @@ import Clients from './components/Clients';
 import Sales from './components/Sales';
 import Harvests from './components/Harvests';
 import Equipment from './components/Equipment';
+import Conservation from './components/Conservation';
 import Profile from './components/Profile';
 import Investments from './components/Investments';
 import Settings from './components/Settings';
