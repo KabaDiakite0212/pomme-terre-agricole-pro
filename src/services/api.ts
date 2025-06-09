@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:3001/api';
@@ -119,6 +118,46 @@ export class ApiService {
 
   static async createClient(data: any) {
     const response = await api.post('/clients', data);
+    return response.data;
+  }
+
+  // Conservation API
+  static async getConservation(type?: string, parentId?: string) {
+    const params = new URLSearchParams();
+    if (type) params.append('type', type);
+    if (parentId) params.append('parentId', parentId);
+    
+    const response = await api.get(`/conservation?${params.toString()}`);
+    return response.data;
+  }
+
+  static async createConservation(data: any) {
+    const response = await api.post('/conservation', data);
+    return response.data;
+  }
+
+  static async updateConservation(id: string, data: any) {
+    const response = await api.patch(`/conservation/${id}`, data);
+    return response.data;
+  }
+
+  static async deleteConservation(id: string) {
+    const response = await api.delete(`/conservation/${id}`);
+    return response.data;
+  }
+
+  static async assignRecolte(conservationId: string, recolteId: string) {
+    const response = await api.post(`/conservation/${conservationId}/assign`, { recolteId });
+    return response.data;
+  }
+
+  static async libererEmplacement(conservationId: string) {
+    const response = await api.post(`/conservation/${conservationId}/liberer`);
+    return response.data;
+  }
+
+  static async getConservationStatistics() {
+    const response = await api.get('/conservation/statistics');
     return response.data;
   }
 }
