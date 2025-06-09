@@ -12,6 +12,7 @@ import Sales from './components/Sales';
 import Harvests from './components/Harvests';
 import Equipment from './components/Equipment';
 import Conservation from './components/Conservation';
+import Conseils from './components/Conseils';
 import Profile from './components/Profile';
 import Investments from './components/Investments';
 import Settings from './components/Settings';
@@ -33,6 +34,7 @@ function App() {
               <Route path="/inputs" element={<Inputs />} />
               <Route path="/equipment" element={<Equipment />} />
               <Route path="/conservation" element={<Conservation />} />
+              <Route path="/conseils" element={<Conseils />} />
               <Route path="/clients" element={<Clients />} />
               <Route path="/sales" element={<Sales />} />
               <Route path="/investments" element={<Investments />} />

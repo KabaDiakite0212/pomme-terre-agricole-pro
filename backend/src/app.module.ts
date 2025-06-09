@@ -10,6 +10,7 @@ import { EquipmentModule } from './equipment/equipment.module';
 import { InputsModule } from './inputs/inputs.module';
 import { SurfacesModule } from './surfaces/surfaces.module';
 import { ConservationModule } from './conservation/conservation.module';
+import { ConseilsModule } from './conseils/conseils.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ConservationModule } from './conservation/conservation.module';
     InputsModule,
     SurfacesModule,
     ConservationModule,
+    ConseilsModule,
   ],
 })
 export class AppModule {}

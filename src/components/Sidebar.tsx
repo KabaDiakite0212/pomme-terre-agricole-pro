@@ -13,7 +13,8 @@ import {
   Wrench,
   Calculator,
   Settings,
-  Refrigerator
+  Refrigerator,
+  BookOpen
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -29,6 +30,7 @@ const navigation = [
   { name: 'Intrants & Stocks', href: '/inputs', icon: Database },
   { name: 'Équipements & Matériels', href: '/equipment', icon: Wrench },
   { name: 'Conservation Chambre Froide', href: '/conservation', icon: Refrigerator },
+  { name: 'Conseils Agronomiques', href: '/conseils', icon: BookOpen },
   { name: 'Prévisions & Investissements', href: '/investments', icon: Calculator },
   { name: 'Clients', href: '/clients', icon: Users },
   { name: 'Ventes', href: '/sales', icon: Calendar },

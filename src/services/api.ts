@@ -160,4 +160,25 @@ export class ApiService {
     const response = await api.get('/conservation/statistics');
     return response.data;
   }
+
+  // Conseils API
+  static async getConseils() {
+    const response = await api.get('/conseils');
+    return response.data;
+  }
+
+  static async createConseil(data: any) {
+    const response = await api.post('/conseils', data);
+    return response.data;
+  }
+
+  static async updateConseil(id: string, data: any) {
+    const response = await api.patch(`/conseils/${id}`, data);
+    return response.data;
+  }
+
+  static async deleteConseil(id: string) {
+    const response = await api.delete(`/conseils/${id}`);
+    return response.data;
+  }
 }
