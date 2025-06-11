@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:3001/api';
@@ -52,6 +53,16 @@ export class ApiService {
     return response.data;
   }
 
+  static async updateField(id: string, data: any) {
+    const response = await api.patch(`/fields/${id}`, data);
+    return response.data;
+  }
+
+  static async deleteField(id: string) {
+    const response = await api.delete(`/fields/${id}`);
+    return response.data;
+  }
+
   static async createFieldAction(fieldId: string, action: any) {
     const response = await api.post(`/fields/${fieldId}/actions`, action);
     return response.data;
@@ -70,6 +81,11 @@ export class ApiService {
 
   static async updateHarvest(id: string, data: any) {
     const response = await api.patch(`/harvests/${id}`, data);
+    return response.data;
+  }
+
+  static async deleteHarvest(id: string) {
+    const response = await api.delete(`/harvests/${id}`);
     return response.data;
   }
 
@@ -105,6 +121,11 @@ export class ApiService {
     return response.data;
   }
 
+  static async deleteInput(id: string) {
+    const response = await api.delete(`/inputs/${id}`);
+    return response.data;
+  }
+
   static async useInput(inputId: string, usage: any) {
     const response = await api.post(`/inputs/${inputId}/use`, usage);
     return response.data;
@@ -112,6 +133,27 @@ export class ApiService {
 
   static async buyInput(inputId: string, purchase: any) {
     const response = await api.post(`/inputs/${inputId}/buy`, purchase);
+    return response.data;
+  }
+
+  // Equipment API
+  static async getEquipment() {
+    const response = await api.get('/equipment');
+    return response.data;
+  }
+
+  static async createEquipment(data: any) {
+    const response = await api.post('/equipment', data);
+    return response.data;
+  }
+
+  static async updateEquipment(id: string, data: any) {
+    const response = await api.patch(`/equipment/${id}`, data);
+    return response.data;
+  }
+
+  static async deleteEquipment(id: string) {
+    const response = await api.delete(`/equipment/${id}`);
     return response.data;
   }
 

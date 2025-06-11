@@ -50,4 +50,22 @@ export class FieldsService {
   async findBySurface(surfaceId: string): Promise<Field[]> {
     return this.fieldModel.find({ surfaceId }).exec();
   }
+
+  async addAction(id: string, action: any): Promise<Field> {
+    const field = await this.fieldModel.findById(id).exec();
+    if (!field) {
+      throw new NotFoundException(`Champ avec l'ID ${id} non trouvé`);
+    }
+
+    // Ajouter l'action au champ (vous pouvez adapter selon votre schéma)
+    if (!field.actions) {
+      field.actions = [];
+    }
+    field.actions.push({
+      ...action,
+      date: new Date(),
+    });
+
+    return field.save();
+  }
 }

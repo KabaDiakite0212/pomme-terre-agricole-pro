@@ -1,44 +1,59 @@
+
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft } from 'lucide-react';
+import { useCreateHarvest } from '@/hooks/useHarvests';
+import { useFields } from '@/hooks/useFields';
 
 interface CreateHarvestProps {
   onBack: () => void;
   onSave: (harvest: any) => void;
 }
 
-const CreateHarvest = ({ onBack, onSave }: CreateHarvestProps) => {
-  const [formData, setFormData] = useState({
-    fieldName: '',
-    variety: '',
-    harvestDate: '',
-    quantity: '',
-    quality: '',
-    storageLocation: '',
-    unitPrice: ''
-  });
+interface FormData {
+  fieldName: string;
+  variety: string;
+  harvestDate: string;
+  quantity: number;
+  quality: string;
+  storageLocation: string;
+  unitPrice: number;
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newHarvest = {
-      id: Date.now(),
-      fieldName: formData.fieldName,
-      variety: formData.variety,
-      harvestDate: formData.harvestDate,
-      quantity: parseInt(formData.quantity),
-      quality: formData.quality,
-      storageLocation: formData.storageLocation,
-      unitPrice: parseFloat(formData.unitPrice),
-      totalValue: parseInt(formData.quantity) * parseFloat(formData.unitPrice),
-      sold: 0,
-      inStock: parseInt(formData.quantity)
-    };
-    onSave(newHarvest);
-    onBack();
+const CreateHarvest = ({ onBack, onSave }: CreateHarvestProps) => {
+  const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormData>();
+  const createHarvestMutation = useCreateHarvest();
+  const { data: fields = [] } = useFields();
+  const watchedValues = watch();
+
+  const onSubmit = async (data: FormData) => {
+    console.log('Creating harvest:', data);
+    
+    try {
+      const newHarvest = {
+        fieldName: data.fieldName,
+        variety: data.variety,
+        harvestDate: data.harvestDate,
+        quantity: data.quantity,
+        quality: data.quality,
+        storageLocation: data.storageLocation,
+        unitPrice: data.unitPrice,
+        totalValue: data.quantity * data.unitPrice,
+        sold: 0,
+        inStock: data.quantity
+      };
+      
+      await createHarvestMutation.mutateAsync(newHarvest);
+      onSave(newHarvest);
+      onBack();
+    } catch (error) {
+      console.error('Error creating harvest:', error);
+    }
   };
 
   return (
@@ -57,24 +72,27 @@ const CreateHarvest = ({ onBack, onSave }: CreateHarvestProps) => {
           <CardDescription>Enregistrez une nouvelle récolte</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="fieldName">Champ récolté *</Label>
-                <Select onValueChange={(value) => setFormData({...formData, fieldName: value})}>
+                <Select onValueChange={(value) => setValue('fieldName', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez le champ" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Champ A1">Champ A1</SelectItem>
-                    <SelectItem value="Champ B2">Champ B2</SelectItem>
-                    <SelectItem value="Champ C3">Champ C3</SelectItem>
+                    {fields.map((field: any) => (
+                      <SelectItem key={field._id} value={field.name}>
+                        {field.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
+                {!watchedValues.fieldName && <p className="text-red-500 text-sm mt-1">Le champ est requis</p>}
               </div>
               <div>
                 <Label htmlFor="variety">Calibre *</Label>
-                <Select onValueChange={(value) => setFormData({...formData, variety: value})}>
+                <Select onValueChange={(value) => setValue('variety', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez le calibre" />
                   </SelectTrigger>
@@ -84,6 +102,7 @@ const CreateHarvest = ({ onBack, onSave }: CreateHarvestProps) => {
                     <SelectItem value="Gros calibre">Gros calibre</SelectItem>
                   </SelectContent>
                 </Select>
+                {!watchedValues.variety && <p className="text-red-500 text-sm mt-1">Le calibre est requis</p>}
               </div>
             </div>
 
@@ -93,27 +112,31 @@ const CreateHarvest = ({ onBack, onSave }: CreateHarvestProps) => {
                 <Input
                   id="quantity"
                   type="number"
-                  value={formData.quantity}
-                  onChange={(e) => setFormData({...formData, quantity: e.target.value})}
+                  {...register('quantity', { 
+                    required: 'La quantité est requise',
+                    min: { value: 1, message: 'La quantité doit être supérieure à 0' }
+                  })}
                   placeholder="Ex: 2800"
-                  required
                 />
+                {errors.quantity && <p className="text-red-500 text-sm mt-1">{errors.quantity.message}</p>}
               </div>
               <div>
                 <Label htmlFor="unitPrice">Prix unitaire (GNF/kg)</Label>
                 <Input
                   id="unitPrice"
                   type="number"
-                  value={formData.unitPrice}
-                  onChange={(e) => setFormData({...formData, unitPrice: e.target.value})}
+                  {...register('unitPrice', { 
+                    min: { value: 0, message: 'Le prix doit être positif' }
+                  })}
                   placeholder="Ex: 25000"
                 />
+                {errors.unitPrice && <p className="text-red-500 text-sm mt-1">{errors.unitPrice.message}</p>}
               </div>
               <div>
                 <Label>Valeur totale (GNF)</Label>
                 <div className="px-3 py-2 bg-gray-100 rounded-md text-lg font-semibold">
-                  {formData.quantity && formData.unitPrice 
-                    ? (parseInt(formData.quantity) * parseFloat(formData.unitPrice)).toLocaleString()
+                  {watchedValues.quantity && watchedValues.unitPrice 
+                    ? (watchedValues.quantity * watchedValues.unitPrice).toLocaleString()
                     : '0'
                   } GNF
                 </div>
@@ -126,14 +149,13 @@ const CreateHarvest = ({ onBack, onSave }: CreateHarvestProps) => {
                 <Input
                   id="harvestDate"
                   type="date"
-                  value={formData.harvestDate}
-                  onChange={(e) => setFormData({...formData, harvestDate: e.target.value})}
-                  required
+                  {...register('harvestDate', { required: 'La date de récolte est requise' })}
                 />
+                {errors.harvestDate && <p className="text-red-500 text-sm mt-1">{errors.harvestDate.message}</p>}
               </div>
               <div>
                 <Label htmlFor="quality">Qualité *</Label>
-                <Select onValueChange={(value) => setFormData({...formData, quality: value})}>
+                <Select onValueChange={(value) => setValue('quality', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Évaluez la qualité" />
                   </SelectTrigger>
@@ -144,12 +166,13 @@ const CreateHarvest = ({ onBack, onSave }: CreateHarvestProps) => {
                     <SelectItem value="Médiocre">Médiocre</SelectItem>
                   </SelectContent>
                 </Select>
+                {!watchedValues.quality && <p className="text-red-500 text-sm mt-1">La qualité est requise</p>}
               </div>
             </div>
 
             <div>
               <Label htmlFor="storageLocation">Lieu de stockage</Label>
-              <Select onValueChange={(value) => setFormData({...formData, storageLocation: value})}>
+              <Select onValueChange={(value) => setValue('storageLocation', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Où stocker la récolte" />
                 </SelectTrigger>
@@ -166,8 +189,12 @@ const CreateHarvest = ({ onBack, onSave }: CreateHarvestProps) => {
               <Button type="button" variant="outline" onClick={onBack}>
                 Annuler
               </Button>
-              <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                Enregistrer la récolte
+              <Button 
+                type="submit" 
+                className="bg-green-600 hover:bg-green-700"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Enregistrement...' : 'Enregistrer la récolte'}
               </Button>
             </div>
           </form>

@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,47 +8,62 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft } from 'lucide-react';
+import { useCreateEquipment } from '@/hooks/useEquipment';
 
 interface CreateEquipmentProps {
   onBack: () => void;
   onSave: (equipment: any) => void;
 }
 
-const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    type: '',
-    status: 'Opérationnel',
-    acquisitionDate: '',
-    lastMaintenance: '',
-    nextMaintenance: '',
-    value: '',
-    description: '',
-    caracteristique: '',
-    dateMiseService: '',
-    dureeAmortissement: '',
-    quantite: ''
-  });
+interface FormData {
+  name: string;
+  type: string;
+  status: string;
+  acquisitionDate: string;
+  lastMaintenance: string;
+  nextMaintenance: string;
+  value: number;
+  description: string;
+  caracteristique: string;
+  dateMiseService: string;
+  dureeAmortissement: number;
+  quantite: number;
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newEquipment = {
-      id: Date.now(),
-      name: formData.name,
-      type: formData.type,
-      status: formData.status,
-      acquisitionDate: formData.acquisitionDate,
-      lastMaintenance: formData.lastMaintenance,
-      nextMaintenance: formData.nextMaintenance,
-      value: parseFloat(formData.value),
-      description: formData.description,
-      caracteristique: formData.caracteristique,
-      dateMiseService: formData.dateMiseService,
-      dureeAmortissement: parseInt(formData.dureeAmortissement),
-      quantite: parseInt(formData.quantite)
-    };
-    onSave(newEquipment);
-    onBack();
+const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
+  const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormData>({
+    defaultValues: {
+      status: 'Opérationnel'
+    }
+  });
+  const createEquipmentMutation = useCreateEquipment();
+  const watchedValues = watch();
+
+  const onSubmit = async (data: FormData) => {
+    console.log('Creating equipment:', data);
+    
+    try {
+      const newEquipment = {
+        name: data.name,
+        type: data.type,
+        status: data.status,
+        acquisitionDate: data.acquisitionDate,
+        lastMaintenance: data.lastMaintenance,
+        nextMaintenance: data.nextMaintenance,
+        value: data.value,
+        description: data.description,
+        caracteristique: data.caracteristique,
+        dateMiseService: data.dateMiseService,
+        dureeAmortissement: data.dureeAmortissement,
+        quantite: data.quantite
+      };
+      
+      await createEquipmentMutation.mutateAsync(newEquipment);
+      onSave(newEquipment);
+      onBack();
+    } catch (error) {
+      console.error('Error creating equipment:', error);
+    }
   };
 
   return (
@@ -66,21 +82,20 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
           <CardDescription>Remplissez les détails de votre nouvel équipement</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="name">Nom de l'équipement *</Label>
                 <Input
                   id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  {...register('name', { required: 'Le nom de l\'équipement est requis' })}
                   placeholder="Ex: Tracteur John Deere 5050E"
-                  required
                 />
+                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
               </div>
               <div>
                 <Label htmlFor="type">Type d'équipement *</Label>
-                <Select onValueChange={(value) => setFormData({...formData, type: value})}>
+                <Select onValueChange={(value) => setValue('type', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez le type" />
                   </SelectTrigger>
@@ -94,6 +109,7 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
                     <SelectItem value="Autre">Autre</SelectItem>
                   </SelectContent>
                 </Select>
+                {!watchedValues.type && <p className="text-red-500 text-sm mt-1">Le type est requis</p>}
               </div>
             </div>
 
@@ -103,29 +119,33 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
                 <Input
                   id="value"
                   type="number"
-                  value={formData.value}
-                  onChange={(e) => setFormData({...formData, value: e.target.value})}
+                  {...register('value', { 
+                    required: 'La valeur est requise',
+                    min: { value: 0, message: 'La valeur doit être positive' }
+                  })}
                   placeholder="Ex: 25000000"
-                  required
                 />
+                {errors.value && <p className="text-red-500 text-sm mt-1">{errors.value.message}</p>}
               </div>
               <div>
                 <Label htmlFor="quantite">Quantité *</Label>
                 <Input
                   id="quantite"
                   type="number"
-                  value={formData.quantite}
-                  onChange={(e) => setFormData({...formData, quantite: e.target.value})}
+                  {...register('quantite', { 
+                    required: 'La quantité est requise',
+                    min: { value: 1, message: 'La quantité doit être supérieure à 0' }
+                  })}
                   placeholder="Ex: 1"
-                  required
                 />
+                {errors.quantite && <p className="text-red-500 text-sm mt-1">{errors.quantite.message}</p>}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="status">Statut *</Label>
-                <Select onValueChange={(value) => setFormData({...formData, status: value})}>
+                <Select onValueChange={(value) => setValue('status', value)} value={watchedValues.status}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez le statut" />
                   </SelectTrigger>
@@ -141,10 +161,12 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
                 <Input
                   id="dureeAmortissement"
                   type="number"
-                  value={formData.dureeAmortissement}
-                  onChange={(e) => setFormData({...formData, dureeAmortissement: e.target.value})}
+                  {...register('dureeAmortissement', { 
+                    min: { value: 1, message: 'La durée doit être supérieure à 0' }
+                  })}
                   placeholder="Ex: 10"
                 />
+                {errors.dureeAmortissement && <p className="text-red-500 text-sm mt-1">{errors.dureeAmortissement.message}</p>}
               </div>
             </div>
 
@@ -154,18 +176,16 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
                 <Input
                   id="acquisitionDate"
                   type="date"
-                  value={formData.acquisitionDate}
-                  onChange={(e) => setFormData({...formData, acquisitionDate: e.target.value})}
-                  required
+                  {...register('acquisitionDate', { required: 'La date d\'acquisition est requise' })}
                 />
+                {errors.acquisitionDate && <p className="text-red-500 text-sm mt-1">{errors.acquisitionDate.message}</p>}
               </div>
               <div>
                 <Label htmlFor="dateMiseService">Date de mise en service</Label>
                 <Input
                   id="dateMiseService"
                   type="date"
-                  value={formData.dateMiseService}
-                  onChange={(e) => setFormData({...formData, dateMiseService: e.target.value})}
+                  {...register('dateMiseService')}
                 />
               </div>
               <div>
@@ -173,8 +193,7 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
                 <Input
                   id="lastMaintenance"
                   type="date"
-                  value={formData.lastMaintenance}
-                  onChange={(e) => setFormData({...formData, lastMaintenance: e.target.value})}
+                  {...register('lastMaintenance')}
                 />
               </div>
             </div>
@@ -184,8 +203,7 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
               <Input
                 id="nextMaintenance"
                 type="date"
-                value={formData.nextMaintenance}
-                onChange={(e) => setFormData({...formData, nextMaintenance: e.target.value})}
+                {...register('nextMaintenance')}
               />
             </div>
 
@@ -193,8 +211,7 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
               <Label htmlFor="caracteristique">Caractéristiques techniques</Label>
               <Textarea
                 id="caracteristique"
-                value={formData.caracteristique}
-                onChange={(e) => setFormData({...formData, caracteristique: e.target.value})}
+                {...register('caracteristique')}
                 placeholder="Puissance, dimensions, capacité, etc."
                 rows={2}
               />
@@ -204,8 +221,7 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                {...register('description')}
                 placeholder="Description de l'équipement, utilisation..."
                 rows={3}
               />
@@ -215,8 +231,12 @@ const CreateEquipment = ({ onBack, onSave }: CreateEquipmentProps) => {
               <Button type="button" variant="outline" onClick={onBack}>
                 Annuler
               </Button>
-              <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                Créer l'équipement
+              <Button 
+                type="submit" 
+                className="bg-green-600 hover:bg-green-700"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Création...' : 'Créer l\'équipement'}
               </Button>
             </div>
           </form>

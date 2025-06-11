@@ -1,11 +1,14 @@
 
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft } from 'lucide-react';
+import { useCreateField } from '@/hooks/useFields';
+import { useSurfaces } from '@/hooks/useSurfaces';
 
 enum SaisonEnum {
   GrandeCompagne = 'Novembre-Avril',
@@ -18,33 +21,44 @@ interface CreateFieldProps {
   onSave: (field: any) => void;
 }
 
-const CreateField = ({ onBack, onSave }: CreateFieldProps) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    surface: '',
-    variety: '',
-    plantDate: '',
-    density: '',
-    area: '',
-    saison: ''
-  });
+interface FormData {
+  name: string;
+  surfaceId: string;
+  variety: string;
+  plantDate: string;
+  density: string;
+  area: number;
+  saison: string;
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newField = {
-      id: Date.now(),
-      name: formData.name,
-      surface: formData.surface,
-      variety: formData.variety,
-      plantDate: formData.plantDate,
-      density: formData.density,
-      stage: 'Plantation',
-      progress: 5,
-      area: parseFloat(formData.area),
-      saison: formData.saison
-    };
-    onSave(newField);
-    onBack();
+const CreateField = ({ onBack, onSave }: CreateFieldProps) => {
+  const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormData>();
+  const createFieldMutation = useCreateField();
+  const { data: surfaces = [] } = useSurfaces();
+  const watchedValues = watch();
+
+  const onSubmit = async (data: FormData) => {
+    console.log('Creating field:', data);
+    
+    try {
+      const newField = {
+        name: data.name,
+        surfaceId: data.surfaceId,
+        variety: data.variety,
+        plantDate: data.plantDate,
+        density: data.density,
+        stage: 'Plantation',
+        progress: 5,
+        area: data.area,
+        saison: data.saison
+      };
+      
+      await createFieldMutation.mutateAsync(newField);
+      onSave(newField);
+      onBack();
+    } catch (error) {
+      console.error('Error creating field:', error);
+    }
   };
 
   return (
@@ -63,37 +77,39 @@ const CreateField = ({ onBack, onSave }: CreateFieldProps) => {
           <CardDescription>Remplissez les détails de votre nouveau champ</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="name">Nom du champ *</Label>
                 <Input
                   id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  {...register('name', { required: 'Le nom du champ est requis' })}
                   placeholder="Ex: Champ A1"
-                  required
                 />
+                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
               </div>
               <div>
-                <Label htmlFor="surface">Surface agricole *</Label>
-                <Select onValueChange={(value) => setFormData({...formData, surface: value})}>
+                <Label htmlFor="surfaceId">Surface agricole *</Label>
+                <Select onValueChange={(value) => setValue('surfaceId', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez la surface" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Parcelle Nord">Parcelle Nord</SelectItem>
-                    <SelectItem value="Parcelle Sud">Parcelle Sud</SelectItem>
-                    <SelectItem value="Parcelle Est">Parcelle Est</SelectItem>
+                    {surfaces.map((surface: any) => (
+                      <SelectItem key={surface._id} value={surface._id}>
+                        {surface.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
+                {!watchedValues.surfaceId && <p className="text-red-500 text-sm mt-1">La surface est requise</p>}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="variety">Calibre des pommes de terre *</Label>
-                <Select onValueChange={(value) => setFormData({...formData, variety: value})}>
+                <Select onValueChange={(value) => setValue('variety', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez le calibre" />
                   </SelectTrigger>
@@ -110,11 +126,13 @@ const CreateField = ({ onBack, onSave }: CreateFieldProps) => {
                   id="area"
                   type="number"
                   step="0.1"
-                  value={formData.area}
-                  onChange={(e) => setFormData({...formData, area: e.target.value})}
+                  {...register('area', { 
+                    required: 'La superficie est requise',
+                    min: { value: 0.1, message: 'La superficie doit être supérieure à 0' }
+                  })}
                   placeholder="Ex: 4.2"
-                  required
                 />
+                {errors.area && <p className="text-red-500 text-sm mt-1">{errors.area.message}</p>}
               </div>
             </div>
 
@@ -124,14 +142,13 @@ const CreateField = ({ onBack, onSave }: CreateFieldProps) => {
                 <Input
                   id="plantDate"
                   type="date"
-                  value={formData.plantDate}
-                  onChange={(e) => setFormData({...formData, plantDate: e.target.value})}
-                  required
+                  {...register('plantDate', { required: 'La date de plantation est requise' })}
                 />
+                {errors.plantDate && <p className="text-red-500 text-sm mt-1">{errors.plantDate.message}</p>}
               </div>
               <div>
                 <Label htmlFor="saison">Saison *</Label>
-                <Select onValueChange={(value) => setFormData({...formData, saison: value})}>
+                <Select onValueChange={(value) => setValue('saison', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez la saison" />
                   </SelectTrigger>
@@ -148,19 +165,22 @@ const CreateField = ({ onBack, onSave }: CreateFieldProps) => {
               <Label htmlFor="density">Densité de semis *</Label>
               <Input
                 id="density"
-                value={formData.density}
-                onChange={(e) => setFormData({...formData, density: e.target.value})}
+                {...register('density', { required: 'La densité de semis est requise' })}
                 placeholder="Ex: 35,000 plants/ha"
-                required
               />
+              {errors.density && <p className="text-red-500 text-sm mt-1">{errors.density.message}</p>}
             </div>
 
             <div className="flex space-x-2 pt-4">
               <Button type="button" variant="outline" onClick={onBack}>
                 Annuler
               </Button>
-              <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                Créer le champ
+              <Button 
+                type="submit" 
+                className="bg-green-600 hover:bg-green-700"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Création...' : 'Créer le champ'}
               </Button>
             </div>
           </form>

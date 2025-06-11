@@ -1,42 +1,54 @@
 
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft } from 'lucide-react';
+import { useCreateInput } from '@/hooks/useInputs';
 
 interface CreateInputProps {
   onBack: () => void;
   onSave: (input: any) => void;
 }
 
-const CreateInput = ({ onBack, onSave }: CreateInputProps) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    category: '',
-    stock: '',
-    unit: '',
-    alertLevel: '',
-    unitPrice: '',
-    lastPurchase: ''
-  });
+interface FormData {
+  name: string;
+  category: string;
+  stock: number;
+  unit: string;
+  alertLevel: number;
+  unitPrice: number;
+  lastPurchase: string;
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newInput = {
-      id: Date.now(),
-      name: formData.name,
-      category: formData.category,
-      stock: parseInt(formData.stock),
-      unit: formData.unit,
-      alertLevel: parseInt(formData.alertLevel),
-      totalValue: parseInt(formData.stock) * parseFloat(formData.unitPrice),
-      lastPurchase: formData.lastPurchase
-    };
-    onSave(newInput);
-    onBack();
+const CreateInput = ({ onBack, onSave }: CreateInputProps) => {
+  const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormData>();
+  const createInputMutation = useCreateInput();
+  const watchedValues = watch();
+
+  const onSubmit = async (data: FormData) => {
+    console.log('Creating input:', data);
+    
+    try {
+      const newInput = {
+        name: data.name,
+        category: data.category,
+        stock: data.stock,
+        unit: data.unit,
+        alertLevel: data.alertLevel,
+        totalValue: data.stock * data.unitPrice,
+        lastPurchase: data.lastPurchase
+      };
+      
+      await createInputMutation.mutateAsync(newInput);
+      onSave(newInput);
+      onBack();
+    } catch (error) {
+      console.error('Error creating input:', error);
+    }
   };
 
   return (
@@ -55,21 +67,20 @@ const CreateInput = ({ onBack, onSave }: CreateInputProps) => {
           <CardDescription>Remplissez les détails de votre nouvel intrant</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="name">Nom de l'intrant *</Label>
                 <Input
                   id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  {...register('name', { required: 'Le nom de l\'intrant est requis' })}
                   placeholder="Ex: Engrais NPK 15-15-15"
-                  required
                 />
+                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
               </div>
               <div>
                 <Label htmlFor="category">Catégorie *</Label>
-                <Select onValueChange={(value) => setFormData({...formData, category: value})}>
+                <Select onValueChange={(value) => setValue('category', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez la catégorie" />
                   </SelectTrigger>
@@ -81,6 +92,7 @@ const CreateInput = ({ onBack, onSave }: CreateInputProps) => {
                     <SelectItem value="Fiente">Fiente</SelectItem>
                   </SelectContent>
                 </Select>
+                {!watchedValues.category && <p className="text-red-500 text-sm mt-1">La catégorie est requise</p>}
               </div>
             </div>
 
@@ -90,15 +102,17 @@ const CreateInput = ({ onBack, onSave }: CreateInputProps) => {
                 <Input
                   id="stock"
                   type="number"
-                  value={formData.stock}
-                  onChange={(e) => setFormData({...formData, stock: e.target.value})}
+                  {...register('stock', { 
+                    required: 'Le stock initial est requis',
+                    min: { value: 0, message: 'Le stock doit être positif' }
+                  })}
                   placeholder="Ex: 25"
-                  required
                 />
+                {errors.stock && <p className="text-red-500 text-sm mt-1">{errors.stock.message}</p>}
               </div>
               <div>
                 <Label htmlFor="unit">Unité *</Label>
-                <Select onValueChange={(value) => setFormData({...formData, unit: value})}>
+                <Select onValueChange={(value) => setValue('unit', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Unité" />
                   </SelectTrigger>
@@ -110,17 +124,20 @@ const CreateInput = ({ onBack, onSave }: CreateInputProps) => {
                     <SelectItem value="unités">Unités</SelectItem>
                   </SelectContent>
                 </Select>
+                {!watchedValues.unit && <p className="text-red-500 text-sm mt-1">L'unité est requise</p>}
               </div>
               <div>
                 <Label htmlFor="alertLevel">Seuil d'alerte *</Label>
                 <Input
                   id="alertLevel"
                   type="number"
-                  value={formData.alertLevel}
-                  onChange={(e) => setFormData({...formData, alertLevel: e.target.value})}
+                  {...register('alertLevel', { 
+                    required: 'Le seuil d\'alerte est requis',
+                    min: { value: 0, message: 'Le seuil doit être positif' }
+                  })}
                   placeholder="Ex: 10"
-                  required
                 />
+                {errors.alertLevel && <p className="text-red-500 text-sm mt-1">{errors.alertLevel.message}</p>}
               </div>
             </div>
 
@@ -130,29 +147,43 @@ const CreateInput = ({ onBack, onSave }: CreateInputProps) => {
                 <Input
                   id="unitPrice"
                   type="number"
-                  value={formData.unitPrice}
-                  onChange={(e) => setFormData({...formData, unitPrice: e.target.value})}
+                  {...register('unitPrice', { 
+                    required: 'Le prix unitaire est requis',
+                    min: { value: 0, message: 'Le prix doit être positif' }
+                  })}
                   placeholder="Ex: 100000"
-                  required
                 />
+                {errors.unitPrice && <p className="text-red-500 text-sm mt-1">{errors.unitPrice.message}</p>}
               </div>
               <div>
                 <Label htmlFor="lastPurchase">Date d'achat</Label>
                 <Input
                   id="lastPurchase"
                   type="date"
-                  value={formData.lastPurchase}
-                  onChange={(e) => setFormData({...formData, lastPurchase: e.target.value})}
+                  {...register('lastPurchase')}
                 />
               </div>
             </div>
+
+            {watchedValues.stock && watchedValues.unitPrice && (
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <Label>Valeur totale calculée</Label>
+                <p className="text-2xl font-bold text-green-600">
+                  {(watchedValues.stock * watchedValues.unitPrice).toLocaleString()} GNF
+                </p>
+              </div>
+            )}
 
             <div className="flex space-x-2 pt-4">
               <Button type="button" variant="outline" onClick={onBack}>
                 Annuler
               </Button>
-              <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                Créer l'intrant
+              <Button 
+                type="submit" 
+                className="bg-green-600 hover:bg-green-700"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Création...' : 'Créer l\'intrant'}
               </Button>
             </div>
           </form>
