@@ -36,6 +36,11 @@ export class ApiService {
     return response.data;
   }
 
+  static async deleteSurface(id: string) {
+    const response = await api.delete(`/surfaces/${id}`);
+    return response.data;
+  }
+
   // Fields API
   static async getFields() {
     const response = await api.get('/fields');

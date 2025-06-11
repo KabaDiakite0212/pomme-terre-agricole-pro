@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,39 +8,57 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { ArrowLeft } from 'lucide-react';
+import { useCreateSurface, Surface } from '@/hooks/useSurfaces';
 
 interface CreateSurfaceProps {
   onBack: () => void;
-  onSave: (surface: any) => void;
 }
 
-const CreateSurface = ({ onBack, onSave }: CreateSurfaceProps) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    area: '',
-    location: '',
-    soilType: '',
-    description: '',
-    waterDistance: '',
-    isFenced: false
+interface FormData {
+  name: string;
+  size: number;
+  location: string;
+  soilType: string;
+  description?: string;
+  waterDistance?: number;
+  isFenced: boolean;
+}
+
+const CreateSurface = ({ onBack }: CreateSurfaceProps) => {
+  const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormData>({
+    defaultValues: {
+      name: '',
+      size: 0,
+      location: '',
+      soilType: '',
+      description: '',
+      waterDistance: 0,
+      isFenced: false
+    }
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newSurface = {
-      id: Date.now(),
-      name: formData.name,
-      area: parseFloat(formData.area),
-      location: formData.location,
-      soilType: formData.soilType,
+  const createSurfaceMutation = useCreateSurface();
+  const watchedValues = watch();
+
+  const onSubmit = async (data: FormData) => {
+    console.log('Submitting surface data:', data);
+    
+    const surfaceData: Omit<Surface, '_id' | 'createdAt' | 'updatedAt'> = {
+      name: data.name,
+      size: data.size,
+      location: data.location,
+      soilType: data.soilType,
       status: 'Disponible',
-      lastCrop: 'Aucune',
-      description: formData.description,
-      waterDistance: parseFloat(formData.waterDistance),
-      isFenced: formData.isFenced
+      description: data.description,
+      notes: data.waterDistance ? `Distance source d'eau: ${data.waterDistance}m${data.isFenced ? ' - Clôturée' : ''}` : undefined
     };
-    onSave(newSurface);
-    onBack();
+
+    try {
+      await createSurfaceMutation.mutateAsync(surfaceData);
+      onBack();
+    } catch (error) {
+      console.error('Error creating surface:', error);
+    }
   };
 
   return (
@@ -59,29 +77,30 @@ const CreateSurface = ({ onBack, onSave }: CreateSurfaceProps) => {
           <CardDescription>Remplissez les détails de votre nouvelle surface agricole</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="name">Nom de la surface *</Label>
                 <Input
                   id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  {...register('name', { required: 'Le nom est requis' })}
                   placeholder="Ex: Parcelle Nord"
-                  required
                 />
+                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
               </div>
               <div>
-                <Label htmlFor="area">Superficie (hectares) *</Label>
+                <Label htmlFor="size">Superficie (hectares) *</Label>
                 <Input
-                  id="area"
+                  id="size"
                   type="number"
                   step="0.1"
-                  value={formData.area}
-                  onChange={(e) => setFormData({...formData, area: e.target.value})}
+                  {...register('size', { 
+                    required: 'La superficie est requise',
+                    min: { value: 0.1, message: 'La superficie doit être supérieure à 0' }
+                  })}
                   placeholder="Ex: 8.5"
-                  required
                 />
+                {errors.size && <p className="text-red-500 text-sm mt-1">{errors.size.message}</p>}
               </div>
             </div>
 
@@ -89,17 +108,16 @@ const CreateSurface = ({ onBack, onSave }: CreateSurfaceProps) => {
               <Label htmlFor="location">Localisation *</Label>
               <Input
                 id="location"
-                value={formData.location}
-                onChange={(e) => setFormData({...formData, location: e.target.value})}
+                {...register('location', { required: 'La localisation est requise' })}
                 placeholder="Ex: Secteur Kindia - Route de Mamou"
-                required
               />
+              {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="soilType">Type de sol *</Label>
-                <Select onValueChange={(value) => setFormData({...formData, soilType: value})}>
+                <Select onValueChange={(value) => setValue('soilType', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez le type de sol" />
                   </SelectTrigger>
@@ -111,16 +129,15 @@ const CreateSurface = ({ onBack, onSave }: CreateSurfaceProps) => {
                     <SelectItem value="Sablo-limoneux">Sablo-limoneux</SelectItem>
                   </SelectContent>
                 </Select>
+                {errors.soilType && <p className="text-red-500 text-sm mt-1">Le type de sol est requis</p>}
               </div>
               <div>
-                <Label htmlFor="waterDistance">Distance de la source d'eau (mètres) *</Label>
+                <Label htmlFor="waterDistance">Distance de la source d'eau (mètres)</Label>
                 <Input
                   id="waterDistance"
                   type="number"
-                  value={formData.waterDistance}
-                  onChange={(e) => setFormData({...formData, waterDistance: e.target.value})}
+                  {...register('waterDistance')}
                   placeholder="Ex: 150"
-                  required
                 />
               </div>
             </div>
@@ -128,8 +145,8 @@ const CreateSurface = ({ onBack, onSave }: CreateSurfaceProps) => {
             <div className="flex items-center space-x-2">
               <Switch
                 id="isFenced"
-                checked={formData.isFenced}
-                onCheckedChange={(checked) => setFormData({...formData, isFenced: checked})}
+                checked={watchedValues.isFenced}
+                onCheckedChange={(checked) => setValue('isFenced', checked)}
               />
               <Label htmlFor="isFenced">Surface clôturée</Label>
             </div>
@@ -138,8 +155,7 @@ const CreateSurface = ({ onBack, onSave }: CreateSurfaceProps) => {
               <Label htmlFor="description">Description (optionnel)</Label>
               <Textarea
                 id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                {...register('description')}
                 placeholder="Description de la surface, particularités..."
                 rows={3}
               />
@@ -149,8 +165,12 @@ const CreateSurface = ({ onBack, onSave }: CreateSurfaceProps) => {
               <Button type="button" variant="outline" onClick={onBack}>
                 Annuler
               </Button>
-              <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                Créer la surface
+              <Button 
+                type="submit" 
+                className="bg-green-600 hover:bg-green-700"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Création...' : 'Créer la surface'}
               </Button>
             </div>
           </form>
